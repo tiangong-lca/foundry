@@ -433,7 +433,7 @@ async function runLocked(
     const preparedTargets = prepare.targets as PreparedTarget[];
     if (!Array.isArray(preparedTargets) || preparedTargets.length !== targets.length)
       reject("retained-preparation");
-    const accepted: Array<{ target: PreparedTarget; run: JsonRecord }> = [];
+    const accepted: Array<{ target: PreparedTarget; run: JsonRecord; runDir: string }> = [];
     const blockers: JsonRecord[] = [];
     let invocations: number | null = 0;
     let thisInvocation: number | null = 0;
@@ -543,7 +543,7 @@ async function runLocked(
           runDir,
           authentication.mode,
         );
-        accepted.push({ target, run });
+        accepted.push({ target, run, runDir });
         if (invocations !== null) invocations += 1;
       } catch (error) {
         invocations = null;
@@ -577,18 +577,17 @@ async function runLocked(
       },
       (operation) => {
         // Partial raw outputs remain retained but unadopted. Only completed exact executions are indexed.
-        for (const { target, run } of accepted) {
-          const runFile = path.resolve(context.assetRoot, String(workflowObject(run.files).report));
-          registerWorkflowStageFiles(context, operation, path.dirname(runFile));
-          registerWorkflowStageFiles(
-            context,
-            operation,
+        const retainedDirectories: string[] = [];
+        for (const { target, runDir } of accepted) {
+          retainedDirectories.push(
+            runDir,
             resolveFoundryOutput(
               context,
               path.resolve(context.assetRoot, String(target.row.output_dir)),
             ),
           );
         }
+        registerWorkflowStageFiles(context, operation, retainedDirectories);
         const combined = path.join(resultRoot, "identity-preflight-requests.jsonl");
         operation.writeText(
           combined,
@@ -710,6 +709,8 @@ function acceptRetainedTarget(
     if (typeof value !== "string") reject("retained-locator");
     return resolveFoundryOutput(context, path.resolve(context.assetRoot, value));
   };
+  if (resolve(workflowObject(run.files).report) !== resolve(runFile))
+    reject("retained-run-report-path");
   if (
     !Array.isArray(run.results) ||
     run.results.length !== 1 ||

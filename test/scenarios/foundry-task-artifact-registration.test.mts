@@ -187,6 +187,87 @@ test("stage walking preserves sorted-child depth-first roster and receipt order"
   assert.deepEqual(fs.readFileSync(nested), Buffer.from([255, 0]));
 });
 
+test("multiple accepted-output directories retain one complete capture roster and receipt order", async (t) => {
+  const f = await fixture(t);
+  const nested = f.write("outputs/first/a/z.bin", Buffer.from([0, 255]));
+  const sibling = f.write("outputs/first/a.txt", "sibling\n");
+  const last = f.write("outputs/first/z.txt", "last\n");
+  const empty = f.write("evidence/second/empty.bin", Buffer.alloc(0));
+  const firstRoot = path.dirname(sibling);
+  const secondRoot = path.dirname(empty);
+  const prefix = fs.readFileSync(f.indexFile);
+  let captures = 0;
+  let operationId = "";
+  let roster: string[] = [];
+  const report = { stage: "selected-roots" };
+  await run(f, "selected-roots", (operation) => {
+    operationId = operation.operationId;
+    roster = registerWorkflowStageFiles(
+      f.context,
+      {
+        ...operation,
+        registerExistingFiles(files) {
+          captures++;
+          operation.registerExistingFiles(files);
+        },
+      },
+      [firstRoot, secondRoot, firstRoot],
+    );
+    operation.writeJson("outputs/selected-roots-report.json", report);
+    return report;
+  });
+  assert.equal(captures, 1);
+  assert.deepEqual(roster, [nested, sibling, last, empty, nested, sibling, last]);
+  assert.deepEqual(
+    recordedOutputs(f, operationId).map((output) => output.path),
+    [
+      "outputs/first/a/z.bin",
+      "outputs/first/a.txt",
+      "outputs/first/z.txt",
+      "evidence/second/empty.bin",
+      "outputs/selected-roots-report.json",
+    ],
+  );
+  assert.deepEqual(fs.readFileSync(nested), Buffer.from([0, 255]));
+  assert.deepEqual(fs.readFileSync(empty), Buffer.alloc(0));
+  assert.deepEqual(fs.readFileSync(f.indexFile).subarray(0, prefix.length), prefix);
+});
+
+test("a later control-record directory refuses the complete selected-root capture without publication", async (t) => {
+  const f = await fixture(t);
+  const selected = f.write("outputs/selected/artifact.bin", "unchanged\n");
+  await refusesWithoutPublication(
+    f,
+    "selected-control",
+    "task_output_role_invalid",
+    (operation) => {
+      registerWorkflowStageFiles(f.context, operation, [
+        path.dirname(selected),
+        path.join(f.context.taskRoot!, "checkpoints"),
+      ]);
+      const report = { stage: "selected-control" };
+      operation.writeJson("outputs/selected-control-report.json", report);
+      return report;
+    },
+  );
+  assert.equal(fs.readFileSync(selected, "utf8"), "unchanged\n");
+});
+
+test("an early-root file changed during whole-roster capture refuses every selected root", async (t) => {
+  const f = await fixture(t);
+  const first = f.write("outputs/early/artifact.bin", "original\n");
+  const last = f.write("evidence/late/artifact.bin", "stable\n");
+  const reached = afterFirstCapture(t, first, () => fs.writeFileSync(first, "changed\n"));
+  await refusesWithoutPublication(f, "selected-change", "task_artifact_changed", (operation) => {
+    registerWorkflowStageFiles(f.context, operation, [path.dirname(first), path.dirname(last)]);
+    const report = { stage: "selected-change" };
+    operation.writeJson("outputs/selected-change-report.json", report);
+    return report;
+  });
+  reached();
+  assert.equal(fs.readFileSync(last, "utf8"), "stable\n");
+});
+
 test("existing-file registration cannot escape its closed task transaction", async (t) => {
   const f = await fixture(t);
   const existing = f.write("outputs/closed.bin", "retained\n");

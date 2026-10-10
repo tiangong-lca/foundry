@@ -590,6 +590,77 @@ test("interruption after genuine owner completion adopts retained outputs withou
   f.assertPreserved();
 });
 
+test("a substituted owner run self-path stays unproven and cannot index another directory or requery", async (t) => {
+  const f = await explicitIdentityStageFixture(t);
+  const selected = f.selection();
+  const foreignDirectory = path.join(f.context.taskRoot!, "outputs", "unselected-parent-tree");
+  fs.mkdirSync(foreignDirectory, { recursive: true });
+  const foreignFile = path.join(foreignDirectory, "unaccepted-target.bin");
+  const foreignBytes = "synthetic unaccepted output\n";
+  fs.writeFileSync(foreignFile, foreignBytes);
+  const originalWrite = fs.writeFileSync;
+  let substituted = 0;
+  let runFile = "";
+  t.mock.method(fs, "writeFileSync", (...args: Parameters<typeof fs.writeFileSync>) => {
+    if (
+      typeof args[0] === "string" &&
+      path.basename(args[0]) === "dataset-identity-preflight-run-report.json"
+    ) {
+      const text =
+        typeof args[1] === "string" ? args[1] : Buffer.from(args[1] as Uint8Array).toString("utf8");
+      const value = JSON.parse(text) as { files: { report: string } };
+      runFile = args[0];
+      value.files.report = path.join(foreignDirectory, "not-the-original-run-report.json");
+      substituted++;
+      return originalWrite(args[0], JSON.stringify(value, null, 2) + "\n", args[2]);
+    }
+    return Reflect.apply(originalWrite, fs, args);
+  });
+  const blocked = await runExplicitFoundryIdentityStage(
+    f.context,
+    f.qualified,
+    f.prefix,
+    selected,
+    headless,
+  );
+  assert.equal(substituted, 1);
+  assert.equal(blocked.status, "blocked");
+  assert.equal(blocked.new_cli_execution, null);
+  assert.equal(
+    (blocked.blockers as Array<{ disposition: string; reason: string }>)[0].disposition,
+    "UNKNOWN_DO_NOT_REPLAY",
+  );
+  assert.match(
+    (blocked.blockers as Array<{ reason: string }>)[0].reason,
+    /retained-run-report-path/u,
+  );
+  assert.equal(f.counts().queries, 1);
+  const index = readFoundryTaskArtifactIndex(f.context);
+  for (const file of [foreignFile, runFile]) {
+    const relative = path.relative(f.context.taskRoot!, file).split(path.sep).join("/");
+    assert.equal(
+      index.some(
+        (entry) => entry.command === "dataset-workflow-identity" && entry.path === relative,
+      ),
+      false,
+    );
+  }
+  const again = await runExplicitFoundryIdentityStage(
+    f.context,
+    f.qualified,
+    index,
+    selected,
+    headless,
+  );
+  assert.equal(again.status, "blocked");
+  assert.equal(again.new_cli_execution, null);
+  assert.equal(f.counts().queries, 1);
+  assert.equal(substituted, 1);
+  assert.equal(fs.readFileSync(foreignFile, "utf8"), foreignBytes);
+  assert.equal(fs.existsSync(runFile), true);
+  f.assertPreserved();
+});
+
 test("a temporarily unproven result later adopts the same genuine execution without retry", async (t) => {
   const f = await explicitIdentityStageFixture(t);
   const selected = f.selection();

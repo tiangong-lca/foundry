@@ -37,7 +37,7 @@ export function createWorkflowStageDirectory(
 export function registerWorkflowStageFiles(
   context: FoundryRuntimeContext,
   operation: FoundryTaskOperation,
-  directory: string,
+  directory: string | readonly string[],
 ): string[] {
   const files: string[] = [];
   const visit = (current: string) => {
@@ -61,7 +61,8 @@ export function registerWorkflowStageFiles(
       }
     }
   };
-  visit(directory);
+  // Snapshot only the selected roots; one result retains one complete capture roster.
+  for (const root of typeof directory === "string" ? [directory] : [...directory]) visit(root);
   operation.registerExistingFiles(files);
   return files;
 }

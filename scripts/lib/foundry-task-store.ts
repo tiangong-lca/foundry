@@ -643,6 +643,7 @@ export async function runFoundryTaskOperation(
                 )
                   fail("task_artifact_changed", "Existing output changed during capture.");
               }
+              verifyCurrent();
               for (const { relativePath, fact } of rechecked)
                 outputs.set(relativePath, {
                   path: relativePath,
@@ -657,6 +658,10 @@ export async function runFoundryTaskOperation(
               "task_result_not_recorded",
               "Local operation must write its exact returned report as an artifact.",
             );
+          assertFoundryWorkspaceWrite(context);
+          const currentTask = loadTask(context, input.task ?? {});
+          if (currentTask.jobSha256 !== task.jobSha256)
+            fail("task_operation_changed", "Task registration changed before receipt publication.");
           verifyInputs(context, task, index);
           receipt = {
             schema: "tiangong-foundry.operation-receipt.v1",

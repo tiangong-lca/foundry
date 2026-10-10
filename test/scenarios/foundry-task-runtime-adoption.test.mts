@@ -79,64 +79,87 @@ const json = (file: string, value: unknown) => {
   fs.writeFileSync(file, JSON.stringify(value));
 };
 
-test("existing-output capture rejects retained CLI drift before publishing its receipt", async (t) => {
-  const f = await fixture(t);
-  const plan = await f.plan();
-  const adopted = await f.successor().adoptTaskRuntime({
-    ...f.invocation,
-    mode: "apply",
-    plan,
+for (const [captureOrdinal, caught] of [
+  [1, false],
+  [2, false],
+  [2, true],
+] as const) {
+  test(`existing-output capture rejects retained CLI drift after pass ${captureOrdinal}${caught ? " even when caught" : ""}`, async (t) => {
+    const f = await fixture(t);
+    const plan = await f.plan();
+    const adopted = await f.successor().adoptTaskRuntime({
+      ...f.invocation,
+      mode: "apply",
+      plan,
+    });
+    assert.equal(adopted.status, "completed", JSON.stringify(adopted));
+    const artifact = path.join(f.taskRoot, "outputs", "capture-cli-drift.bin");
+    fs.mkdirSync(path.dirname(artifact), { recursive: true });
+    fs.writeFileSync(artifact, "owned unchanged output\n");
+    const originalIndex = fs.readFileSync(path.join(f.taskRoot, "artifact-index.jsonl"));
+    const open = fs.openSync;
+    const close = fs.closeSync;
+    let descriptor: number | undefined;
+    let changed = false;
+    let captures = 0;
+    t.mock.method(fs, "openSync", (...args: Parameters<typeof fs.openSync>) => {
+      const fd = open(...args);
+      if (!changed && typeof args[0] === "string" && path.resolve(args[0]) === artifact)
+        descriptor = fd;
+      return fd;
+    });
+    t.mock.method(fs, "closeSync", (fd: number) => {
+      close(fd);
+      if (!changed && fd === descriptor) {
+        descriptor = undefined;
+        captures++;
+        if (captures === captureOrdinal) {
+          changed = true;
+          fs.appendFileSync(path.join(f.oldCliRoot, "package.json"), "\n");
+        }
+      }
+    });
+    let operationId = "";
+    await assert.rejects(
+      () =>
+        runFoundryTaskOperation(
+          f.context,
+          { command: "dataset-workflow-assessment", options: { capture_cli_drift: true } },
+          (operation) => {
+            operationId = operation.operationId;
+            const report = { status: "reported-before-capture" };
+            operation.writeJson("outputs/capture-cli-drift-report.json", report);
+            if (caught)
+              assert.throws(
+                () => operation.registerExistingFiles([artifact]),
+                (error: unknown) =>
+                  Boolean(
+                    error &&
+                    typeof error === "object" &&
+                    "code" in error &&
+                    error.code === "runtime_adoption_dependency_changed",
+                  ),
+              );
+            else operation.registerExistingFiles([artifact]);
+            return report;
+          },
+        ),
+      (error: unknown) =>
+        Boolean(
+          error &&
+          typeof error === "object" &&
+          "code" in error &&
+          error.code === "runtime_adoption_dependency_changed",
+        ),
+    );
+    assert.equal(changed, true, "The first fresh output capture reached the owned CLI drift hook.");
+    assert.ok(operationId);
+    assert.equal(fs.existsSync(path.join(f.taskRoot, `checkpoints/${operationId}.json`)), false);
+    assert.deepEqual(fs.readFileSync(path.join(f.taskRoot, "artifact-index.jsonl")), originalIndex);
+    assert.equal(fs.readFileSync(artifact, "utf8"), "owned unchanged output\n");
   });
-  assert.equal(adopted.status, "completed", JSON.stringify(adopted));
-  const artifact = path.join(f.taskRoot, "outputs", "capture-cli-drift.bin");
-  fs.mkdirSync(path.dirname(artifact), { recursive: true });
-  fs.writeFileSync(artifact, "owned unchanged output\n");
-  const originalIndex = fs.readFileSync(path.join(f.taskRoot, "artifact-index.jsonl"));
-  const open = fs.openSync;
-  const close = fs.closeSync;
-  let descriptor: number | undefined;
-  let changed = false;
-  t.mock.method(fs, "openSync", (...args: Parameters<typeof fs.openSync>) => {
-    const fd = open(...args);
-    if (!changed && typeof args[0] === "string" && path.resolve(args[0]) === artifact)
-      descriptor = fd;
-    return fd;
-  });
-  t.mock.method(fs, "closeSync", (fd: number) => {
-    close(fd);
-    if (!changed && fd === descriptor) {
-      changed = true;
-      fs.appendFileSync(path.join(f.oldCliRoot, "package.json"), "\n");
-    }
-  });
-  let operationId = "";
-  await assert.rejects(
-    () =>
-      runFoundryTaskOperation(
-        f.context,
-        { command: "dataset-workflow-assessment", options: { capture_cli_drift: true } },
-        (operation) => {
-          operationId = operation.operationId;
-          operation.registerExistingFiles([artifact]);
-          const report = { status: "unexpected" };
-          operation.writeJson("outputs/capture-cli-drift-report.json", report);
-          return report;
-        },
-      ),
-    (error: unknown) =>
-      Boolean(
-        error &&
-        typeof error === "object" &&
-        "code" in error &&
-        error.code === "runtime_adoption_dependency_changed",
-      ),
-  );
-  assert.equal(changed, true, "The first fresh output capture reached the owned CLI drift hook.");
-  assert.ok(operationId);
-  assert.equal(fs.existsSync(path.join(f.taskRoot, `checkpoints/${operationId}.json`)), false);
-  assert.deepEqual(fs.readFileSync(path.join(f.taskRoot, "artifact-index.jsonl")), originalIndex);
-  assert.equal(fs.readFileSync(artifact, "utf8"), "owned unchanged output\n");
-});
+}
+
 async function fixture(t: TestContext, sameSummary = false) {
   const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), "foundry-task-adoption-")));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));

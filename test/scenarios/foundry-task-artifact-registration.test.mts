@@ -74,10 +74,11 @@ function recordedOutputs(f: Fixture, operationId: string) {
   return receipt.outputs as { path: string; bytes: number; sha256: string }[];
 }
 
-function afterFirstCapture(t: TestContext, file: string, mutate: () => void) {
+function afterFirstCapture(t: TestContext, file: string, mutate: () => void, ordinal = 1) {
   const open = fs.openSync;
   const close = fs.closeSync;
   let descriptor: number | null = null;
+  let captures = 0;
   let changed = false;
   t.mock.method(fs, "openSync", (...args: Parameters<typeof fs.openSync>) => {
     const opened = open(...args);
@@ -88,8 +89,12 @@ function afterFirstCapture(t: TestContext, file: string, mutate: () => void) {
   t.mock.method(fs, "closeSync", (fd: number) => {
     close(fd);
     if (!changed && fd === descriptor) {
-      changed = true;
-      mutate();
+      descriptor = null;
+      captures++;
+      if (captures === ordinal) {
+        changed = true;
+        mutate();
+      }
     }
   });
   return () => assert.equal(changed, true, "The owned file capture reached the mutation hook.");
@@ -449,6 +454,42 @@ test("capturing an existing JSON file does not replace exact returned-report rec
   );
   assert.deepEqual(fs.readFileSync(reportFile), bytes);
 });
+
+for (const caught of [false, true]) {
+  test(`final capture job drift refuses publication when its failure is ${caught ? "caught" : "propagated"}`, async (t) => {
+    const f = await fixture(t);
+    const artifact = f.write("outputs/final-capture.bin", "retained\n");
+    const reached = afterFirstCapture(
+      t,
+      artifact,
+      () => {
+        const jobFile = path.join(f.context.taskRoot!, "foundry-job.json");
+        const job = JSON.parse(fs.readFileSync(jobFile, "utf8"));
+        job.created_at_utc = "2020-01-01T00:00:00.000Z";
+        fs.writeFileSync(jobFile, JSON.stringify(job));
+      },
+      2,
+    );
+    await refusesWithoutPublication(
+      f,
+      `final-job-drift-${caught}`,
+      "task_snapshot_changed",
+      (operation) => {
+        const report = { stage: "reported-before-capture" };
+        operation.writeJson("outputs/final-capture-report.json", report);
+        if (caught)
+          assert.throws(
+            () => operation.registerExistingFiles([artifact]),
+            hasCode("task_snapshot_changed"),
+          );
+        else operation.registerExistingFiles([artifact]);
+        return report;
+      },
+    );
+    reached();
+    assert.equal(fs.readFileSync(artifact, "utf8"), "retained\n");
+  });
+}
 
 test("completed receipt replay revalidates captured outputs without rerunning the callback", async (t) => {
   const f = await fixture(t);

@@ -1,7 +1,7 @@
 {
   "$schema": "../specs/schemas/file-location-registry.schema.json",
   "schema_version": 1,
-  "updated_at_utc": "2026-10-10T20:49:36.624406Z",
+  "updated_at_utc": "2026-10-10T21:13:58.918774Z",
   "policy_doc": "docs/file-organization.md",
   "entries": [
     {
@@ -11,7 +11,9 @@
       "current_path": ".codex/hooks.json",
       "previous_paths": [],
       "owner": "tiangong-lca-data-foundry",
-      "referenced_by": ["docs/agent-harness-cli-comparison.md"],
+      "referenced_by": [
+        "docs/agent-harness-cli-comparison.md"
+      ],
       "sensitivity": "non-sensitive hook configuration",
       "tracked": true,
       "notes": "Registers the Codex Stop hook for Foundry checks."
@@ -23,7 +25,10 @@
       "current_path": ".codex/hooks/run-foundry-acceptance-check.sh",
       "previous_paths": [],
       "owner": "tiangong-lca-data-foundry",
-      "referenced_by": [".codex/hooks.json", "docs/agent-harness-cli-comparison.md"],
+      "referenced_by": [
+        ".codex/hooks.json",
+        "docs/agent-harness-cli-comparison.md"
+      ],
       "sensitivity": "non-sensitive local hook script; writes runtime logs under ignored .foundry/state/",
       "tracked": true,
       "notes": "Runs Foundry checks before an agent turn finishes."
@@ -35,7 +40,11 @@
       "current_path": "docs/capability-ownership-policy.md",
       "previous_paths": [],
       "owner": "tiangong-lca-data-foundry",
-      "referenced_by": ["WORKFLOW.md", "docs/workspace-project-map.md", "tasks/README.md"],
+      "referenced_by": [
+        "WORKFLOW.md",
+        "docs/workspace-project-map.md",
+        "tasks/README.md"
+      ],
       "sensitivity": "non-sensitive governance policy",
       "tracked": true,
       "notes": "Defines how Foundry distinguishes local orchestration from shared reusable capabilities."
@@ -65,7 +74,10 @@
       "current_path": "specs/automated-lca-capability-registry.json",
       "previous_paths": [],
       "owner": "tiangong-lca-data-foundry",
-      "referenced_by": ["specs/workspace-capability-adapters.md", "scripts/foundry.ts"],
+      "referenced_by": [
+        "specs/workspace-capability-adapters.md",
+        "scripts/foundry.ts"
+      ],
       "sensitivity": "non-sensitive command and artifact contracts; no credentials or private payloads",
       "tracked": true,
       "notes": "Routes deterministic import/conversion/schema validation to unified Rust tidas and keeps CLI context, QA/curation, remote operations, and Foundry-owned gates explicit."
@@ -245,7 +257,7 @@
       ],
       "sensitivity": "non-sensitive task ledger schema examples; contains no credentials and no private payloads",
       "tracked": true,
-      "notes": "Defines immutable source/input lineage, producer-backed operation receipts, current approval, and owner attempt/readback evidence. Task-local question, raw answer, interpreted decision, AI assumption and per-set assessment context artifacts use the same indexed lineage. The dedicated consume operation owns attempts/owner-v1/<scope>/consumed.json; execution requests, observations and results remain registered under task outputs. Canonical reference query/check/result artifacts bind current identity decisions and are verified before reference-only completion. Explicit ordinary/production-test intent is retained in account registration and migration templates; public traceHash acceptance retains original/fresh-read/accepted evidence under owner-readback outputs. Existing local stage outputs are captured by the same Task transaction with the original depth-first roster, fresh writer/runtime/input verification boundaries and two guarded output reads. Capture records facts without rewriting bytes; ordinary writers, completed-receipt replay and index/CAS publication remain with their existing owners. Runtime sampling occurs at capture boundaries and adds no cross-operation proof cache or business permission."
+      "notes": "Defines immutable source/input lineage, producer-backed operation receipts, current approval, and owner attempt/readback evidence. Task-local question, raw answer, interpreted decision, AI assumption and per-set assessment context artifacts use the same indexed lineage. The dedicated consume operation owns attempts/owner-v1/<scope>/consumed.json; execution requests, observations and results remain registered under task outputs. Canonical reference query/check/result artifacts bind current identity decisions and are verified before reference-only completion. Explicit ordinary/production-test intent is retained in account registration and migration templates; public traceHash acceptance retains original/fresh-read/accepted evidence under owner-readback outputs. Existing local stage outputs are captured by the same Task transaction with the original depth-first roster, fresh writer/runtime/input verification boundaries and two guarded output reads. Capture records facts without rewriting bytes; ordinary writers, completed-receipt replay and index/CAS publication remain with their existing owners. Runtime sampling occurs at capture boundaries and adds no cross-operation proof cache or business permission. Capture also verifies after the second file pass, and new completed-receipt publication reloads current Task/job/runtime/writer bindings so a report-before-capture callback cannot retain late drift by catching the refusal. Storage locations and public receipt/index schemas are unchanged."
     },
     {
       "id": "foundry-safety-policy",
@@ -711,7 +723,9 @@
       "status": "active",
       "classification": "native-execution-adapter",
       "current_path": "scripts/lib/finalize-owners/native-draft-handoff.ts",
-      "previous_paths": ["scripts/lib/finalize-owners/native-insert-handoff.ts"],
+      "previous_paths": [
+        "scripts/lib/finalize-owners/native-insert-handoff.ts"
+      ],
       "owner": "tiangong-lca-data-foundry",
       "referenced_by": [
         "scripts/lib/finalize-owners/commit-handoff.ts",
@@ -728,9 +742,13 @@
       "status": "active",
       "classification": "native-execution-adapter",
       "current_path": "scripts/lib/finalize-owners/native-draft-closeout.ts",
-      "previous_paths": ["scripts/lib/finalize-owners/native-insert-closeout.ts"],
+      "previous_paths": [
+        "scripts/lib/finalize-owners/native-insert-closeout.ts"
+      ],
       "owner": "tiangong-lca-data-foundry",
-      "referenced_by": ["scripts/lib/finalize-owners/post-write-closeout.ts"],
+      "referenced_by": [
+        "scripts/lib/finalize-owners/post-write-closeout.ts"
+      ],
       "sensitivity": "non-sensitive consumer orchestration source; contains no credentials or task payloads",
       "tracked": true,
       "notes": "Validates matching native CLI v2 execution receipts per action operation, including strict recovered-exact-readback rows, against handoff contracts; independent root verification remains mandatory."
@@ -742,7 +760,9 @@
       "current_path": "scripts/lib/finalize-owners/finalize-reference-inputs.ts",
       "previous_paths": [],
       "owner": "tiangong-lca-data-foundry",
-      "referenced_by": ["scripts/lib/finalize-owners/post-authoring.ts"],
+      "referenced_by": [
+        "scripts/lib/finalize-owners/post-authoring.ts"
+      ],
       "sensitivity": "non-sensitive runtime source; no credentials or task payloads",
       "tracked": true,
       "notes": "Validates explicit local reference selections before output and delegates scientific eligibility to CLI."
@@ -769,7 +789,9 @@
       "current_path": "scripts/lib/finalize-owners/reference-intent-closeout.ts",
       "previous_paths": [],
       "owner": "tiangong-lca-data-foundry",
-      "referenced_by": ["scripts/lib/finalize-owners/post-write-closeout.ts"],
+      "referenced_by": [
+        "scripts/lib/finalize-owners/post-write-closeout.ts"
+      ],
       "sensitivity": "non-sensitive runtime source; no credentials or task payloads",
       "tracked": true,
       "notes": "Requires matching reference readback and complete current handoff evidence."
@@ -781,7 +803,9 @@
       "current_path": "scripts/lib/foundry-reference-input.ts",
       "previous_paths": [],
       "owner": "tiangong-lca-data-foundry",
-      "referenced_by": ["scripts/foundry-facade.ts"],
+      "referenced_by": [
+        "scripts/foundry-facade.ts"
+      ],
       "sensitivity": "non-sensitive runtime source; no credentials or task payloads",
       "tracked": true,
       "notes": "Parses explicit public reference input and records immutable indexed control snapshots."

@@ -35,8 +35,8 @@ checkPaths:
   - test/unit/runtime-layout.test.mts
   - test/scenarios/foundry-package-consumer.test.mts
 lastReviewedAt: 2026-10-10
-lastReviewedCommit: 261f835099b0d0dfe7cd6f6c03df9c76ea490e67
-lastReviewedNote: "Reviewed native preflight dispatch paths and strict retained command proof, explicit portable native fixture modes, measured/provisional CI weights and separate partial TAP diagnostics. Runtime/authentication/no-requery/scientific boundaries remain unchanged; original DATA acceptance is separate."
+lastReviewedCommit: baaa384e1db47fb53eb29f7b3764e448510aeff1
+lastReviewedNote: "Reviewed final existing-output capture verification on the working delta based on baaa384e. Current writer/runtime/job/profile and source/input checks run before, between and after two fresh output reads; an independent P2 report-before-capture late-drift repro is fixed, including a caught error returning previously written JSON. New receipt publication reloads current writer/Task/runtime and preserves final input verification; ordinary bytewriters, cached replay, sorted depth-first roster, index CAS and authority/science remain unchanged. Focused59/59 and wholeadoption23/23 pass; latejob2RED->2GREEN and retainedCLI first/second/caught negatives are recorded. No cross-operation hash cache or filesystem-wide atomicity claim. baaa preparation remained unused,87bd Native19/20 failed history remains preserved; new full Source/emitted/installed/native qualification is pending. No originalDATA requery/default034/science/release change."
 related:
   - docs/public-runtime-contract.md
   - docs/runtime-context-contract.md

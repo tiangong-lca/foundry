@@ -36,8 +36,8 @@ checkPaths:
   - test/unit/foundry-migration-transfer.test.mts
   - test/scenarios/workspace-migration-transfer.test.mts
 lastReviewedAt: 2026-10-10
-lastReviewedCommit: 7dfd8c00277b2cf1811feff8541381a8bc780c1d
-lastReviewedNote: "Reviewed shared fresh byte/hash inventory verification at 7dfd8c00: only the three retained package/CLI inventory loops omit discarded canonical locator output. Every selected relative path, full inventory, regular/no-follow/inode/device/size/time/linked-path/growth check and per-writer runtime revalidation remains; no fact/hash cache. Full entry/descriptor path facts retain native/generic resolution and its errors before close. Focused unit23/23 and complete adoption20/20 pass. Old564 local qualification and native Win1 timeout/cancellation remain distinct; new source/emitted/installed/native qualification is pending. No new authority, scientific approval, original DATA acceptance or default change."
+lastReviewedCommit: baaa384e1db47fb53eb29f7b3764e448510aeff1
+lastReviewedNote: "Reviewed final existing-output capture verification on the working delta based on baaa384e. Current writer/runtime/job/profile and source/input checks run before, between and after two fresh output reads; an independent P2 report-before-capture late-drift repro is fixed, including a caught error returning previously written JSON. New receipt publication reloads current writer/Task/runtime and preserves final input verification; ordinary bytewriters, cached replay, sorted depth-first roster, index CAS and authority/science remain unchanged. Focused59/59 and wholeadoption23/23 pass; latejob2RED->2GREEN and retainedCLI first/second/caught negatives are recorded. No cross-operation hash cache or filesystem-wide atomicity claim. baaa preparation remained unused,87bd Native19/20 failed history remains preserved; new full Source/emitted/installed/native qualification is pending. No originalDATA requery/default034/science/release change."
 related:
   - docs/public-runtime-contract.md
   - docs/runtime-context-contract.md

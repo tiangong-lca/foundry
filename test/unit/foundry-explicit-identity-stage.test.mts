@@ -676,15 +676,22 @@ for (const outcome of ["wrong-target-exit0", "stderr-exit0"] as const) {
 test("metadata preparation crossing 60 seconds obtains fresh permission identity before search", async (t) => {
   const f = await explicitIdentityStageFixture(t);
   t.mock.timers.enable({ apis: ["Date"], now: Date.now() });
-  const originalRead = fs.readFileSync;
+  const originalOpen = fs.openSync;
+  const originalClose = fs.closeSync;
+  let inventoryDescriptor: number | undefined;
   let advanced = false;
-  t.mock.method(fs, "readFileSync", (...args: Parameters<typeof fs.readFileSync>) => {
-    const value = Reflect.apply(originalRead, fs, args);
-    if (!advanced && String(args[0]).endsWith("runtime-cli-inventory.json")) {
+  t.mock.method(fs, "openSync", (...args: Parameters<typeof fs.openSync>) => {
+    const descriptor = Reflect.apply(originalOpen, fs, args);
+    if (!advanced && String(args[0]).endsWith("runtime-cli-inventory.json"))
+      inventoryDescriptor = descriptor;
+    return descriptor;
+  });
+  t.mock.method(fs, "closeSync", (descriptor: number) => {
+    originalClose(descriptor);
+    if (!advanced && descriptor === inventoryDescriptor) {
       advanced = true;
       t.mock.timers.tick(70_000);
     }
-    return value;
   });
   f.beforeSearch(() => assert.ok(f.counts().authCalls >= 2));
   const result = await runExplicitFoundryIdentityStage(

@@ -92,9 +92,9 @@ checkPaths:
   - test/unit/identity-preflight-run-command-factory.test.mts
   - test/unit/post-authoring-finalize-command-factory.test.mts
   - test/commands/*.test.mts
-lastReviewedAt: 2026-10-07
-lastReviewedCommit: caa95a4808eda51dc5c7c78f3c39e4e079bdb802
-lastReviewedNote: "Reviewed Foundry #223 preparation consuming complete owning CLI 0.1.27 validation, exact candidate/Flow bindings and published Toolkit 0.3.4 applicable coverage; authorization and no-replay boundaries remain unchanged. Foundry source version stays 0.1.16 pending a separate release."
+lastReviewedAt: 2026-10-11
+lastReviewedCommit: 87bd357a5a3e0932eeae3e85aab8717d89ca43b2
+lastReviewedNote: "Reviewed internal existing-output metadata capture on the working delta based on 87bd357a: same Task owner/lock/receipt/index/public surfaces; active transaction, persisted writer admission, original job/runtime/profile and current source/input bookends; copied depth-first roster and two fresh output captures before atomic fact registration. Byte writers keep per-write checks, consumed/control paths remain excluded and no runtime/hash cache is added. Sampling is explicit: transient restored filesystem changes between capture boundaries are not claimed observable. Source26/26 capture guards, installed-runtime retainedCLI drift and complete adoption21/21 pass; full Source/emitted/installed/current Native qualification is pending. Local larger-batch benchmark is not Windows cause/cure or originalDATA acceptance. Prior87bd Native19/20 failed C4 parent deadlines/40m cap is retained; no original queries/science/default/release change."
 ---
 
 # Foundry Command Surface

@@ -41,8 +41,8 @@ checkPaths:
   - test/scenarios/foundry-execution-admission.test.mts
   - test/scenarios/foundry-package-consumer.test.mts
 lastReviewedAt: 2026-10-11
-lastReviewedCommit: aa86f8067c0998a48b72f78151e7d04139f74be6
-lastReviewedNote: "Reviewed explicit-stage short private OS child CWD against the existing owner/CLI dotenv boundary: selected requests, receipts, outputs and index resolution remain task/asset-bound; single attempts, 60-second guards and UNKNOWN/no-replay are unchanged. Focused32/32 and repair-sensitive RED/GREEN plus real declared-bin offline dotenv sentinel and cleanup checks pass; new full source/emitted/installed/native qualification is pending. aa86 Native failure and original691 DATA acceptance remain separate; no original requery, authority/science/default/release change."
+lastReviewedCommit: 87bd357a5a3e0932eeae3e85aab8717d89ca43b2
+lastReviewedNote: "Reviewed internal existing-output metadata capture on the working delta based on 87bd357a: same Task owner/lock/receipt/index/public surfaces; active transaction, persisted writer admission, original job/runtime/profile and current source/input bookends; copied depth-first roster and two fresh output captures before atomic fact registration. Byte writers keep per-write checks, consumed/control paths remain excluded and no runtime/hash cache is added. Sampling is explicit: transient restored filesystem changes between capture boundaries are not claimed observable. Source26/26 capture guards, installed-runtime retainedCLI drift and complete adoption21/21 pass; full Source/emitted/installed/current Native qualification is pending. Local larger-batch benchmark is not Windows cause/cure or originalDATA acceptance. Prior87bd Native19/20 failed C4 parent deadlines/40m cap is retained; no original queries/science/default/release change."
 related:
   - docs/architecture.md
   - docs/task-authorization-contract.md
@@ -110,6 +110,8 @@ An unversioned nonempty `.foundry` requires explicit inventory/migration. Initia
 User-selected external inputs are regular files captured as canonical path, byte size and SHA-256. Capture streams hashes and detects changes while reading. Data reads require a selected fact and matching current bytes; file descriptors are checked against the selected file before reading. Credential `.env*` files and an account's session reference cannot become dataset inputs. This selection boundary does not make a data file's instructions authoritative.
 
 Task artifacts are written only under the selected `taskRoot`; state and cache have distinct resolver areas. Existing path components and physical containment are checked, including after directories are created. Symlink/junction escapes and a changed workspace marker are rejected. A complete new artifact is installed exclusively from an owned temporary file. Existing identical bytes may be reused; different existing bytes require a new output revision. A failed operation never deletes a prior artifact.
+
+The Task store can capture already generated stage outputs without rewriting their bytes. Its private transaction capability verifies current writer/runtime/source/input bindings at capture boundaries and freshly resolves, reads and compares every output twice before recording the batch. Content writers retain their per-write checks. This adds no public entry, environment trust, business permission or cross-operation proof cache; the sampling boundary is documented in [the Task contract](foundry-task-contracts.md#local-operation-plans-and-receipts).
 
 The default in-memory data-read bound is 64 MiB; native/streaming stages must declare and enforce their own larger-input protocol instead of silently loading unbounded payloads. Cache contents and layout records are not write or replay authority.
 

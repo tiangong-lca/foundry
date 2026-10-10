@@ -160,9 +160,9 @@ checkPaths:
   - test/unit/identity-preflight-run-command-factory.test.mts
   - test/unit/post-authoring-finalize-command-factory.test.mts
   - test/commands/*.test.mts
-lastReviewedAt: 2026-10-10
-lastReviewedCommit: 84f4cd573675e457c84213314ee228d0410b4ad3
-lastReviewedNote: "Reviewed original managed-entry L=S+K qualification and explicit cli-auth projection, CLI0.1.28 compatible pin and genuine subprocess test boundaries. Complete original DATA account/business acceptance remains separate."
+lastReviewedAt: 2026-10-11
+lastReviewedCommit: 87bd357a5a3e0932eeae3e85aab8717d89ca43b2
+lastReviewedNote: "Reviewed internal existing-output metadata capture on the working delta based on 87bd357a: same Task owner/lock/receipt/index/public surfaces; active transaction, persisted writer admission, original job/runtime/profile and current source/input bookends; copied depth-first roster and two fresh output captures before atomic fact registration. Byte writers keep per-write checks, consumed/control paths remain excluded and no runtime/hash cache is added. Sampling is explicit: transient restored filesystem changes between capture boundaries are not claimed observable. Source26/26 capture guards, installed-runtime retainedCLI drift and complete adoption21/21 pass; full Source/emitted/installed/current Native qualification is pending. Local larger-batch benchmark is not Windows cause/cure or originalDATA acceptance. Prior87bd Native19/20 failed C4 parent deadlines/40m cap is retained; no original queries/science/default/release change."
 ---
 
 # Foundry AI Navigation

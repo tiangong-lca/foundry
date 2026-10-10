@@ -28,9 +28,9 @@ checkPaths:
   - specs/schemas/execution-context.schema.json
   - specs/import-profiles.json
   - tasks/**
-lastReviewedAt: 2026-10-10
-lastReviewedCommit: 7dfd8c00277b2cf1811feff8541381a8bc780c1d
-lastReviewedNote: "Reviewed shared fresh byte/hash inventory verification at 7dfd8c00: only the three retained package/CLI inventory loops omit discarded canonical locator output. Every selected relative path, full inventory, regular/no-follow/inode/device/size/time/linked-path/growth check and per-writer runtime revalidation remains; no fact/hash cache. Full entry/descriptor path facts retain native/generic resolution and its errors before close. Focused unit23/23 and complete adoption20/20 pass. Old564 local qualification and native Win1 timeout/cancellation remain distinct; new source/emitted/installed/native qualification is pending. No new authority, scientific approval, original DATA acceptance or default change."
+lastReviewedAt: 2026-10-11
+lastReviewedCommit: 87bd357a5a3e0932eeae3e85aab8717d89ca43b2
+lastReviewedNote: "Reviewed internal existing-output metadata capture on the working delta based on 87bd357a: same Task owner/lock/receipt/index/public surfaces; active transaction, persisted writer admission, original job/runtime/profile and current source/input bookends; copied depth-first roster and two fresh output captures before atomic fact registration. Byte writers keep per-write checks, consumed/control paths remain excluded and no runtime/hash cache is added. Sampling is explicit: transient restored filesystem changes between capture boundaries are not claimed observable. Source26/26 capture guards, installed-runtime retainedCLI drift and complete adoption21/21 pass; full Source/emitted/installed/current Native qualification is pending. Local larger-batch benchmark is not Windows cause/cure or originalDATA acceptance. Prior87bd Native19/20 failed C4 parent deadlines/40m cap is retained; no original queries/science/default/release change."
 related:
   - AGENTS.md
   - WORKFLOW.md
@@ -125,6 +125,10 @@ The source-evidence lane additionally requires a retained `seed-manifest.json`. 
 The first admitted transaction is deterministic local `dataset-curation-cleanup`. Remote mutations, network-driven work and batch execution must not be routed through its replay path.
 
 An operation id binds job bytes, command, exact selected input facts and normalized options. Its immutable plan retains a fixed operation time, so interrupted deterministic preparation can reproduce its artifacts without overwriting prior bytes. A successful operation records all output facts and the exact returned report, then atomically updates `artifact-index.jsonl`. Repeating the same request reads only the matching completed local receipt and revalidates outputs; it does not rerun the command or append duplicate records.
+
+Existing CLI-generated stage files use an internal transaction capability that records their facts without creating or replacing file bytes. The existing sorted-child, depth-first walk retains containment, regular-file/link checks and the 9,998-file limit. Capture requires an active transaction, current workspace writer selection, matching Task/job/runtime/profile and current source/input lineage at its verification boundaries. Every selected output is resolved and freshly read twice; only a complete matching batch updates the operation's output map, in the original roster order. Task control and consumed-marker paths are excluded. Ordinary `writeText`/`writeJson` retain their per-write admission and immutable-byte behavior, and only `writeJson` can register the exact returned JSON report. Final input verification, receipt replay and index-prefix/CAS publication are unchanged.
+
+This capture phase executes no business command. Runtime inventories are checked at capture boundaries rather than before each existing file; no facts or hashes are reused across operations. Those samples do not guarantee observation of a transient change restored between them or an atomic snapshot against arbitrary same-user filesystem mutation. Persistent writer/runtime/input drift and differences between the fresh output captures refuse completion and retain unindexed stage files.
 
 A completed _operation receipt_ means its local invocation produced recorded output. It does not mean the business task is completed or that a blocked cleanup report passed its gates. The facade must interpret the actual result and required completion/readback evidence.
 

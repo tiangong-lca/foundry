@@ -601,6 +601,55 @@ export async function runFoundryTaskOperation(
                 sha256: digest(data),
               });
             },
+            registerExistingFiles(files) {
+              if (!active)
+                fail(
+                  "task_operation_closed",
+                  "Operation writers cannot escape the task transaction.",
+                );
+              if (!files.length) return;
+              const roster = [...files];
+              const verifyCurrent = () => {
+                assertFoundryWorkspaceWrite(context);
+                const current = loadTask(context, input.task ?? {});
+                if (current.jobSha256 !== task.jobSha256)
+                  fail(
+                    "task_operation_changed",
+                    "Task registration changed during output capture.",
+                  );
+                verifyInputs(context, task, index);
+              };
+              const capture = (file: string) => {
+                assertFoundryWorkspaceWrite(context);
+                const relativePath = relative(context, file);
+                if (!/^(?:outputs|evidence)\//u.test(relativePath))
+                  fail(
+                    "task_output_role_invalid",
+                    "Existing outputs cannot register task control records.",
+                  );
+                return { relativePath, fact: captureFoundryInput(taskPath(context, file)) };
+              };
+              // This read-only capture executes no owner command and writes no file bytes.
+              // Fresh writer/runtime/input bookends precede a second guarded read of every output.
+              verifyCurrent();
+              const captured = roster.map(capture);
+              verifyCurrent();
+              const rechecked = roster.map(capture);
+              for (const [position, current] of rechecked.entries()) {
+                const previous = captured[position];
+                if (
+                  current.relativePath !== previous.relativePath ||
+                  !sameFact(current.fact, previous.fact)
+                )
+                  fail("task_artifact_changed", "Existing output changed during capture.");
+              }
+              for (const { relativePath, fact } of rechecked)
+                outputs.set(relativePath, {
+                  path: relativePath,
+                  bytes: fact.bytes,
+                  sha256: fact.sha256,
+                });
+            },
           });
           const resultRef = jsonObjects.get(digest(bytes(result)));
           if (!resultRef)

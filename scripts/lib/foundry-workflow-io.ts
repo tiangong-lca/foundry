@@ -57,12 +57,12 @@ export function registerWorkflowStageFiles(
             "workflow_output_limit",
             "Stage exceeds the task artifact limit.",
           );
-        operation.writeText(file, fs.readFileSync(file));
         files.push(file);
       }
     }
   };
   visit(directory);
+  operation.registerExistingFiles(files);
   return files;
 }
 

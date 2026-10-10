@@ -18,8 +18,8 @@ checkPaths:
   - .codex/hooks.json
   - .codex/hooks/run-foundry-acceptance-check.sh
   - scripts/commands/core.ts
-lastReviewedAt: 2026-10-08
-lastReviewedCommit: d07ac492a3a5891502039a6cc83ef30b9fbba50b
+lastReviewedAt: 2026-10-11
+lastReviewedCommit: 87bd357a5a3e0932eeae3e85aab8717d89ca43b2
 lastReviewedNote: "Reviewed Foundry #237 exact three-field 0.1.16 to 0.1.17 release projection from eligible PR236 Main d07ac492; CLI/native pins, lock closure, authorization and all business source remain unchanged. Official publication and final managed qualification remain pending."
 related:
   - docs/file-organization.md

@@ -87,31 +87,59 @@ function packageFiles(root: string, requireIndependentFiles = true) {
     .filter((file) => !file.path.startsWith("node_modules/"))
     .map(({ mode: _mode, ...file }) => file);
 }
-function physicalPackage(source: string, target: string) {
-  let targetCreated = false;
-  for (const entry of fs.readdirSync(source, { withFileTypes: true })) {
-    if (entry.name === "node_modules") continue;
-    const origin = path.join(source, entry.name),
-      destination = path.join(target, entry.name);
-    if (entry.isDirectory()) physicalPackage(origin, destination);
-    else {
-      assert.ok(entry.isFile(), origin);
-      if (!targetCreated) {
-        fs.mkdirSync(path.dirname(destination), { recursive: true });
-        targetCreated = true;
+async function physicalPackage(source: string, target: string): Promise<void> {
+  const running = new Set<Promise<void>>();
+  const errors: unknown[] = [];
+  const enqueue = async (job: () => Promise<void>) => {
+    while (running.size >= 4) await Promise.race(running);
+    if (errors.length) return;
+    const pending = Promise.resolve()
+      .then(job)
+      .catch((error: unknown) => {
+        errors.push(error);
+      })
+      .finally(() => {
+        running.delete(pending);
+      });
+    running.add(pending);
+  };
+  const visit = async (originRoot: string, destinationRoot: string): Promise<void> => {
+    // Per-invocation directory creation only; no cross-call/operation proof cache.
+    let targetCreation: Promise<string | undefined> | undefined;
+    for (const entry of fs.readdirSync(originRoot, { withFileTypes: true })) {
+      if (errors.length) return;
+      if (entry.name === "node_modules") continue;
+      const origin = path.join(originRoot, entry.name),
+        destination = path.join(destinationRoot, entry.name);
+      if (entry.isDirectory()) await visit(origin, destination);
+      else {
+        assert.ok(entry.isFile(), origin);
+        await enqueue(async () => {
+          await (targetCreation ??= fs.promises.mkdir(path.dirname(destination), {
+            recursive: true,
+          }));
+          await fs.promises.copyFile(origin, destination);
+          await fs.promises.chmod(destination, (await fs.promises.stat(origin)).mode & 0o777);
+          const destinationBytes = await fs.promises.readFile(destination);
+          const originBytes = await fs.promises.readFile(origin);
+          assert.equal(digest(destinationBytes), digest(originBytes), destination);
+          assert.equal((await fs.promises.stat(destination)).nlink, 1);
+          if (process.platform !== "win32")
+            assert.notEqual(
+              (await fs.promises.stat(destination)).ino,
+              (await fs.promises.stat(origin)).ino,
+            );
+        });
       }
-      fs.copyFileSync(origin, destination);
-      fs.chmodSync(destination, fs.statSync(origin).mode & 0o777);
-      assert.equal(
-        digest(fs.readFileSync(destination)),
-        digest(fs.readFileSync(origin)),
-        destination,
-      );
-      assert.equal(fs.statSync(destination).nlink, 1);
-      if (process.platform !== "win32")
-        assert.notEqual(fs.statSync(destination).ino, fs.statSync(origin).ino);
     }
+  };
+  try {
+    await visit(source, target);
+  } catch (error) {
+    errors.push(error);
   }
+  await Promise.all(running);
+  if (errors.length) throw errors[0];
 }
 function resolvePackage(file: string, name: string): string {
   const selected = createRequire(file)
@@ -150,8 +178,9 @@ function closure(cliRoot: string): Array<{ name: string; version: string; root: 
   visit(cliRoot);
   return [...selected.values()];
 }
-export function copyCliProductionClosure(cliRoot: string, destination: string) {
-  for (const pkg of closure(cliRoot)) physicalPackage(pkg.root, path.join(destination, pkg.name));
+export async function copyCliProductionClosure(cliRoot: string, destination: string) {
+  for (const pkg of closure(cliRoot))
+    await physicalPackage(pkg.root, path.join(destination, pkg.name));
 }
 let build: { root: string; stage: string } | undefined;
 export function managedAdoptionPackage() {
@@ -341,12 +370,13 @@ export async function managedAdoptionFixture(t: TestContext, syntheticTransport 
     calls = path.join(root, "synthetic-calls.jsonl");
   json(control, { auth: "valid", query: "manual" });
   fs.writeFileSync(calls, "");
-  const copyGraph = (destination: string, includeFoundry: boolean) => {
-    for (const pkg of graph) physicalPackage(pkg.root, path.join(destination, pkg.name));
-    if (includeFoundry) physicalPackage(stage, path.join(destination, "@tiangong-lca/foundry"));
+  const copyGraph = async (destination: string, includeFoundry: boolean) => {
+    for (const pkg of graph) await physicalPackage(pkg.root, path.join(destination, pkg.name));
+    if (includeFoundry)
+      await physicalPackage(stage, path.join(destination, "@tiangong-lca/foundry"));
   };
-  copyGraph(manager, false);
-  copyGraph(path.join(app, "node_modules"), true);
+  await copyGraph(manager, false);
+  await copyGraph(path.join(app, "node_modules"), true);
   const appCli = path.join(app, "node_modules/@tiangong-lca/cli");
   const managerInventory = managedInventory(manager);
   if (syntheticTransport) {
@@ -381,12 +411,12 @@ export async function managedAdoptionFixture(t: TestContext, syntheticTransport 
   for (const entry of fs.readdirSync(path.join(app, "node_modules"), { withFileTypes: true })) {
     if (entry.name.startsWith("@"))
       for (const child of fs.readdirSync(path.join(app, "node_modules", entry.name)))
-        physicalPackage(
+        await physicalPackage(
           path.join(app, "node_modules", entry.name, child),
           path.join(previous, "node_modules", entry.name, child),
         );
     else
-      physicalPackage(
+      await physicalPackage(
         path.join(app, "node_modules", entry.name),
         path.join(previous, "node_modules", entry.name),
       );
@@ -548,14 +578,18 @@ export async function managedAdoptionFixture(t: TestContext, syntheticTransport 
     };
     return { component, archive };
   };
-  const newApp = await prepareComponent("application", app, [managed]),
-    oldApp = await prepareComponent("previous", previous, [managed]),
-    native = await prepareComponent(
-      "native",
-      nativeInput,
-      ["fixture-native.v1"],
-      [nodePath, nativePath],
-    );
+  const preparations = await Promise.allSettled([
+    prepareComponent("application", app, [managed]),
+    prepareComponent("previous", previous, [managed]),
+    prepareComponent("native", nativeInput, ["fixture-native.v1"], [nodePath, nativePath]),
+  ]);
+  // Every independent archive settles before any manifest or installation begins.
+  for (const outcome of preparations) if (outcome.status === "rejected") throw outcome.reason;
+  const [newApp, oldApp, native] = preparations.map((outcome) => {
+    assert.equal(outcome.status, "fulfilled");
+    if (outcome.status !== "fulfilled") throw new Error("Incomplete fixture archive preparation");
+    return outcome.value;
+  });
   const launches: RuntimeManifest["launches"] = ["foundry", "foundry-read"].map((id) => ({
     id,
     platform,

@@ -34,7 +34,7 @@ import { runFoundryTaskOperation } from "../../scripts/lib/foundry-task-store.ts
 let buildRoot: string;
 let packageRoot: string;
 let moduleUrl: string;
-before(() => {
+before(async () => {
   buildRoot = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), "foundry-adoption-build-")));
   const repo = path.resolve(import.meta.dirname, "../..");
   for (const selected of [
@@ -62,7 +62,7 @@ before(() => {
   packageRoot = path.join(buildRoot, "package-stage");
   const cli = describeCliRuntime();
   const ownedCli = path.join(packageRoot, "node_modules/@tiangong-lca/cli");
-  copyCliProductionClosure(cli.package.root, path.join(packageRoot, "node_modules"));
+  await copyCliProductionClosure(cli.package.root, path.join(packageRoot, "node_modules"));
   for (const file of cli.files)
     assert.equal(
       fs.statSync(path.join(ownedCli, file.path)).nlink,

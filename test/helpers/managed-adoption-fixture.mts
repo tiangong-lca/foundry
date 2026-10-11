@@ -88,6 +88,7 @@ function packageFiles(root: string, requireIndependentFiles = true) {
     .map(({ mode: _mode, ...file }) => file);
 }
 function physicalPackage(source: string, target: string) {
+  let targetCreated = false;
   for (const entry of fs.readdirSync(source, { withFileTypes: true })) {
     if (entry.name === "node_modules") continue;
     const origin = path.join(source, entry.name),
@@ -95,7 +96,10 @@ function physicalPackage(source: string, target: string) {
     if (entry.isDirectory()) physicalPackage(origin, destination);
     else {
       assert.ok(entry.isFile(), origin);
-      fs.mkdirSync(path.dirname(destination), { recursive: true });
+      if (!targetCreated) {
+        fs.mkdirSync(path.dirname(destination), { recursive: true });
+        targetCreated = true;
+      }
       fs.copyFileSync(origin, destination);
       fs.chmodSync(destination, fs.statSync(origin).mode & 0o777);
       assert.equal(
@@ -600,13 +604,14 @@ export async function managedAdoptionFixture(t: TestContext, syntheticTransport 
       trusted = trustRuntimeManifest(bytes, digest(bytes));
     const file = path.join(root, pathName);
     fs.writeFileSync(file, bytes);
+    let inspection: ReturnType<typeof inspectRuntimeComponents> | undefined;
     for (const item of items)
       if (
         value.components.find((component) => component.id === item.component.id)?.content_sha256 ===
         item.component.content_sha256
       )
         seeds.set(
-          inspectRuntimeComponents(trusted, { cacheDir: cache }).components.find(
+          (inspection ??= inspectRuntimeComponents(trusted, { cacheDir: cache })).components.find(
             (component) => component.id === item.component.id,
           )!.key,
           item.archive,

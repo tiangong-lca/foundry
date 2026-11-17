@@ -23,7 +23,12 @@ const object = (value: unknown) => value as Json;
 async function verifyGuardedUpdate(
   t: TestContext,
   annualVolumeKnown: boolean,
-  mode: "update" | "no-change" | "preflight-refusals" | "approval-refusals" = "update",
+  mode:
+    | "lost-response"
+    | "acknowledged"
+    | "no-change"
+    | "preflight-refusals"
+    | "approval-refusals" = "lost-response",
 ) {
   if (resolveInstalledTiangongLcaCliPackage().packageVersion !== "0.4.0")
     return t.skip("requires the exact published CLI 0.4 candidate");
@@ -135,7 +140,7 @@ async function verifyGuardedUpdate(
   });
 
   let remote = before;
-  let offline = true;
+  let offline = mode === "lost-response";
   let writes = 0;
   let faultyRoot: "owner" | "state" | "version" | "hash" | "missing" | "duplicate" | null = null;
   const endpoints: string[] = [];
@@ -158,7 +163,12 @@ async function verifyGuardedUpdate(
       );
       assert.deepEqual(body.jsonOrdered, desired);
       remote = object(body.jsonOrdered);
-      throw new Error("response lost after guarded update");
+      if (mode === "lost-response") throw new Error("response lost after guarded update");
+      return Response.json({
+        command: "dataset_save_draft",
+        ok: true,
+        data: { id, version, user_id: account.user_id, state_code: 0 },
+      });
     }
     assert.equal(endpoint, "app_dataset_verify_remote");
     assert.equal(body.rootPolicy, "existing");
@@ -382,6 +392,17 @@ async function verifyGuardedUpdate(
     current = await facade.resume(invocation);
   }
   assert.equal(writes, 1, JSON.stringify(current.blockers));
+  if (mode === "acknowledged") {
+    for (let step = 0; step < 5 && current.status !== "completed"; step++)
+      current = await facade.resume(invocation);
+    assert.equal(current.status, "completed", JSON.stringify(current.blockers));
+    assert.equal(writes, 1);
+    assert.deepEqual(remote, desired);
+    const writeIndex = endpoints.indexOf("app_dataset_save_draft");
+    assert.ok(endpoints.slice(writeIndex + 1).includes("app_dataset_verify_remote"));
+    assert.equal(read(find("owner-readback.json").path).status, "verified");
+    return;
+  }
   assert.notEqual(current.status, "completed");
   const original = find("owner-execution-request.json");
   const count = endpoints.length;
@@ -411,6 +432,9 @@ async function verifyGuardedUpdate(
   assert.equal(proof.status, "verified");
   assert.equal(object(proof.repair_preparation).sha256, preparation.sha256);
 }
+
+test("CLI 0.4 guarded Process update verifies the acknowledged write by exact readback", (t) =>
+  verifyGuardedUpdate(t, true, "acknowledged"));
 
 test("CLI 0.4 guarded Process update recovers the original attempt without resending", (t) =>
   verifyGuardedUpdate(t, true));

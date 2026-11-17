@@ -547,99 +547,23 @@ export async function recordFoundryWorkflowAuthorization(
       }
     }
     if (request.inputKind === "repair_rows") {
-      // The repair scope has no finalization: its write plan is the reviewed native save-draft
-      // handoff over the immutable candidate rows and the selected execution contract. The capsule
-      // seals exactly that command, and the owner execution request stays a separate later stage.
+      // Seal the guarded Edge update over the reviewed candidate, before rows and contract.
+      // The owner execution request stays a separate later stage.
       const handoffDir = path.join(output, "handoff");
       fs.mkdirSync(handoffDir, { recursive: true, mode: 0o700 });
-      handoff = bindHandoffCommands(
+      if (!request.executionContract || !request.repairPreparation)
+        throw new FoundryContextError(
+          "repair_edge_scope_changed",
+          "Guarded update requires a registered preparation and execution contract.",
+        );
+      handoff = createFoundryRepairHandoffPlan({
         context,
-        createFoundryRepairHandoffPlan({
-          context,
-          candidateFile: inputFile,
-          contractFile: request.executionContract!.path,
-          outDir: handoffDir,
-        }),
-        inputFile,
-      );
-      if (qualified.cli.expectation.package_version === "0.4.0") {
-        const contract = captureFoundryInput(request.executionContract!.path);
-        const preparation = captureFoundryInput(request.repairPreparation!.path);
-        readFoundryInput(context, preparation.path);
-        const before = captureFoundryInput(
-          resolveFoundryInputPath(context, foundryRepairSelection(context).before),
-        );
-        const read = (file: string) => readFoundryInput(context, file).toString("utf8");
-        const preparedEvidence = workflowObject(
-          workflowObject(JSON.parse(read(preparation.path))).evidence,
-        );
-        const preflight = Array.isArray(preparedEvidence.detail)
-          ? preparedEvidence.detail
-              .map(workflowObject)
-              .find((item) => item.role === "edge_preflight")
-          : undefined;
-        const ruleVerification = workflowObject(
-          workflowObject(preflight?.report ?? {}).rule_verification ?? {},
-        );
-        const dependencyFact = Array.isArray(preparedEvidence.files)
-          ? preparedEvidence.files
-              .map(workflowObject)
-              .find(
-                (file) => file.role === "edge-repair:out/references/edge-support-precommit.json",
-              )
-          : undefined;
-        if (typeof dependencyFact?.path !== "string")
-          throw new FoundryContextError(
-            "repair_edge_scope_changed",
-            "Guarded update requires the exact dependency report registered during preparation.",
-          );
-        const dependencies = resolveFoundryOutput(context, dependencyFact.path);
-        const dependencyFile = captureFoundryInput(dependencies);
-        if (
-          dependencyFile.sha256 !== dependencyFact.sha256 ||
-          dependencyFile.bytes !== dependencyFact.bytes
-        )
-          throw new FoundryContextError(
-            "repair_edge_scope_changed",
-            "The registered dependency report changed after preparation.",
-          );
-        const commands = workflowObject(handoff.commands);
-        commands.commit = buildEdgeSupportPlan(
-          "process",
-          captureFoundryInput(inputFile),
-          {
-            project_ref: context.accountIntent!.projectRef,
-            user_id: context.accountIntent!.userId,
-          },
-          readRows(inputFile, read),
-          {
-            fact: dependencyFile,
-            report: JSON.parse(read(dependencies)),
-          },
-          {
-            binding: {
-              before,
-              contract,
-              preparation,
-              rule_verification: ruleVerification as Record<string, boolean>,
-            },
-            rows: readRows(before.path, read),
-          },
-        );
-        commands.post_write_verify = null;
-        handoff.account_write_guard = {
-          target_user_id: context.accountIntent!.userId,
-          commit_account_binding: "sealed_guarded_edge_update",
-          execution_precondition:
-            "Compare the exact reviewed before document inside the Edge save-draft transaction.",
-        };
-        handoff.policy = {
-          commit_boundary:
-            "The sealed owner attempt sends one guarded update and recovers exclusively through exact readback.",
-          post_write_verify_required: true,
-          compare_root_payload_required: true,
-        };
-      }
+        candidateFile: inputFile,
+        beforeFile: resolveFoundryInputPath(context, foundryRepairSelection(context).before),
+        contract: request.executionContract,
+        preparation: request.repairPreparation,
+        outDir: handoffDir,
+      });
       fs.writeFileSync(
         path.join(handoffDir, "dataset-commit-handoff-plan.json"),
         JSON.stringify(handoff, null, 2) + "\n",

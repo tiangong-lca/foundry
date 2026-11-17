@@ -5,7 +5,6 @@ import { syncBuiltinESMExports } from "node:module";
 import path from "node:path";
 import test, { type TestContext } from "node:test";
 import { createFoundryFacade } from "../../scripts/public-api.ts";
-import { resolveInstalledTiangongLcaCliPackage } from "../../scripts/lib/foundry-runtime-utils.ts";
 import { sha256Json } from "../../scripts/lib/identity-preflight-proof.ts";
 import { collectDatasetReferences } from "../../scripts/lib/import-curation/internal/workflow-reference-closure.ts";
 import { datasetIdentity } from "../../scripts/lib/import-curation/internal/dataset-payload.ts";
@@ -30,8 +29,6 @@ async function verifyGuardedUpdate(
     | "preflight-refusals"
     | "approval-refusals" = "lost-response",
 ) {
-  if (resolveInstalledTiangongLcaCliPackage().packageVersion !== "0.4.0")
-    return t.skip("requires the exact published CLI 0.4 candidate");
   const { root, workspace, facadeOptions } = workflowFixture(t);
   const account = finalizationProcessAccount;
   const origin = `https://${account.project_ref}.supabase.co`;
@@ -433,20 +430,20 @@ async function verifyGuardedUpdate(
   assert.equal(object(proof.repair_preparation).sha256, preparation.sha256);
 }
 
-test("CLI 0.4 guarded Process update verifies the acknowledged write by exact readback", (t) =>
+test("guarded Process update verifies the acknowledged write by exact readback", (t) =>
   verifyGuardedUpdate(t, true, "acknowledged"));
 
-test("CLI 0.4 guarded Process update recovers the original attempt without resending", (t) =>
+test("guarded Process update recovers the original attempt without resending", (t) =>
   verifyGuardedUpdate(t, true));
 
-test("CLI 0.4 guarded Process update retains the admitted unknown annual-volume gap", (t) =>
+test("guarded Process update retains the admitted unknown annual-volume gap", (t) =>
   verifyGuardedUpdate(t, false));
 
-test("CLI 0.4 no-op repair closes only on exact readback and reuses the existing proof", (t) =>
+test("no-op repair closes only on exact readback and reuses the existing proof", (t) =>
   verifyGuardedUpdate(t, true, "no-change"));
 
-test("CLI 0.4 metadata repair refuses invalid before readback", (t) =>
+test("metadata repair refuses invalid before readback", (t) =>
   verifyGuardedUpdate(t, true, "preflight-refusals"));
 
-test("CLI 0.4 metadata repair refuses authorization outside the sealed scope", (t) =>
+test("metadata repair refuses authorization outside the sealed scope", (t) =>
   verifyGuardedUpdate(t, true, "approval-refusals"));

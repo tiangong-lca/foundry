@@ -404,3 +404,19 @@ test("publication stages restore required proofs and diagnostics have no publica
   const caller = object(jobs["release-qualification"]);
   assert.ok((caller.needs as string[]).includes("release-preflight"));
 });
+
+test("PR planning and version revalidation receive the same event comparison identities", () => {
+  const jobs = object(workflow("quality-gate.yml").jobs);
+  const planner = steps(object(jobs.plan)).find((step) => step.id === "plan");
+  const versionCheck = steps(object(jobs["version-pr"])).find(
+    (step) => step.run === "node scripts/ci-version-gate.ts",
+  );
+  assert.ok(planner && versionCheck);
+  for (const step of [planner, versionCheck]) {
+    const env = object(step.env);
+    assert.equal(env.FOUNDRY_CI_BASE_SHA, "${{ github.event.pull_request.base.sha }}");
+    assert.equal(env.FOUNDRY_CI_PR_HEAD_SHA, "${{ github.event.pull_request.head.sha }}");
+    assert.equal(env.FOUNDRY_CI_PR_NUMBER, "${{ github.event.number }}");
+    assert.equal(env.FOUNDRY_CI_PR_BASE_REPO_ID, "${{ github.event.pull_request.base.repo.id }}");
+  }
+});

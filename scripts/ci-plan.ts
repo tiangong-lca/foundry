@@ -6,10 +6,10 @@ import {
   foundryCiTestMatrix,
 } from "./lib/foundry-ci-plan.ts";
 import {
-  inspectFoundryRelease,
   readFoundryReleaseGit,
   type FoundryReleaseChange,
 } from "./lib/foundry-release-contract.ts";
+import { inspectFoundryCiPullRequest } from "./lib/foundry-ci-pr-inspection.ts";
 import { restoreStage, stageExpectation, stageArtifactName } from "./lib/foundry-ci-stage.ts";
 
 const root = path.resolve(import.meta.dirname, "..");
@@ -26,7 +26,7 @@ function main(args: readonly string[]): void {
   const event = process.env.GITHUB_EVENT_NAME ?? "local";
   const inspection: FoundryReleaseChange =
     event === "pull_request" && reusable === undefined
-      ? inspectFoundryRelease(root, process.env.FOUNDRY_CI_BASE_SHA ?? "", source)
+      ? inspectFoundryCiPullRequest(root, source, process.env)
       : { release: false, changedPaths: [] };
   let mode: string = selectFoundryCiMode(event, reusable, inspection);
   const tests = loadFoundryTestPlan(root);

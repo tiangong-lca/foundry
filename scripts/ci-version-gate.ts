@@ -1,9 +1,7 @@
 import path from "node:path";
 import { spawnSync } from "node:child_process";
-import {
-  inspectFoundryRelease,
-  readFoundryReleaseGit as git,
-} from "./lib/foundry-release-contract.ts";
+import { readFoundryReleaseGit as git } from "./lib/foundry-release-contract.ts";
+import { inspectFoundryCiPullRequest } from "./lib/foundry-ci-pr-inspection.ts";
 import { loadFoundryTestPlan } from "./lib/foundry-ci-plan.ts";
 import { resolvePackageManagerCommand } from "./lib/package-manager-command.ts";
 
@@ -25,7 +23,7 @@ function main(): void {
   const head = git(root, ["rev-parse", "HEAD"]).trim();
   if (head !== process.env.GITHUB_SHA)
     throw new Error("Version-only CI source differs from the pull request checkout.");
-  const inspection = inspectFoundryRelease(root, process.env.FOUNDRY_CI_BASE_SHA ?? "", head);
+  const inspection = inspectFoundryCiPullRequest(root, head, process.env);
   if (!inspection.release) throw new Error("This is not the exact version-only projection.");
   for (const command of ["lint", "test:toolchain", "surface:audit", "build", "audit:high"]) {
     const invocation = resolvePackageManagerCommand("pnpm", [command]);
@@ -45,7 +43,7 @@ function main(): void {
   )
     throw new Error("Version-only CI test selection is incomplete.");
   run(process.execPath, ["--test", "--test-concurrency=2", ...files]);
-  const after = inspectFoundryRelease(root, process.env.FOUNDRY_CI_BASE_SHA ?? "", head);
+  const after = inspectFoundryCiPullRequest(root, head, process.env);
   if (
     !after.release ||
     after.tree !== inspection.tree ||

@@ -62,6 +62,9 @@ jobs:
         env:
           FOUNDRY_CI_SOURCE_SHA: ${{ inputs.source_sha }}
           FOUNDRY_CI_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          FOUNDRY_CI_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          FOUNDRY_CI_PR_NUMBER: ${{ github.event.number }}
+          FOUNDRY_CI_PR_BASE_REPO_ID: ${{ github.event.pull_request.base.repo.id }}
           GH_TOKEN: ${{ github.token }}
           FOUNDRY_RESUME_RUN: ${{ inputs.resume_run_id || '' }}
           FOUNDRY_CI_CAN_SEAL: ${{ github.repository == 'tiangong-lca/foundry' && github.repository_id == '1260957221' && github.repository_owner_id == '327771381' && (github.event_name != 'pull_request' || (github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.user.login != 'dependabot[bot]')) }}
@@ -200,6 +203,9 @@ jobs:
       - name: Revalidate exact version projection and contracts
         env:
           FOUNDRY_CI_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          FOUNDRY_CI_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          FOUNDRY_CI_PR_NUMBER: ${{ github.event.number }}
+          FOUNDRY_CI_PR_BASE_REPO_ID: ${{ github.event.pull_request.base.repo.id }}
         run: node scripts/ci-version-gate.ts
   quality-gate:
     name: quality-gate (${{ matrix.os }} / ${{ matrix.arch }})

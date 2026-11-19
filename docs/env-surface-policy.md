@@ -35,8 +35,8 @@ checkPaths:
   - test/scenarios/foundry-package-consumer.test.mts
   - test/unit/foundry-runtime-environment.test.mts
 lastReviewedAt: 2026-11-19
-lastReviewedCommit: 0306fdd8bf452a6139021884178da27f6a6fcb40
-lastReviewedNote: "Foundry #287: reviewed the four eligible development-tool updates and complete unchanged lock graph during formatting; native/source qualification, compiler and public-runtime closure, cache inputs, credential and publishing authority remain unchanged."
+lastReviewedCommit: 61806029d2fd53d268e709da630513778a38eabe
+lastReviewedNote: "Foundry #290: scoped review of the nineteen original pnpm/setup v3.1.2 references and preserved exact toolchain, complete source/native/bootstrap tests, immutable-author non-sealing, cache inputs and publication/operational authority. Historical Windows timeout and withdrawn advisory remain distinct; document behavior is unchanged."
 ---
 
 # Environment Surface Policy

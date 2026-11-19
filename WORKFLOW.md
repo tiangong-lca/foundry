@@ -303,8 +303,8 @@ policy:
   required_multilang_english_before_write: true
   preserve_source_language_variants: true
 lastReviewedAt: 2026-11-19
-lastReviewedCommit: 0306fdd8bf452a6139021884178da27f6a6fcb40
-lastReviewedNote: "Foundry #287: reviewed the four eligible development-tool updates and complete unchanged lock graph during formatting; native/source qualification, compiler and public-runtime closure, cache inputs, credential and publishing authority remain unchanged."
+lastReviewedCommit: 4feb5a33c6976ead150529d9126256cfb8eccf80
+lastReviewedNote: "Foundry #291: reviewed bounded test-only stage, original-case and error observations for the retained CLI 0.1.28 suite. Historical source/assertions/frozen inputs, the 900-second child and 40-minute job limits, and source/native/bootstrap/publishing authority remain unchanged. New diagnostics contain no credential or service/account context."
 ---
 
 You are working on a TianGong LCA data import task.

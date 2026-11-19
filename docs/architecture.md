@@ -152,9 +152,9 @@ checkPaths:
   - test/unit/foundry-runtime-environment.test.mts
   - test/unit/lint-suppression-audit.test.mts
   - docs/incremental-change-set-contract.md
-lastReviewedAt: 2026-11-19
-lastReviewedCommit: 204a90af7841659e281f95b3732f2de6720715bf
-lastReviewedNote: "Foundry #287: reviewed the four eligible development-tool updates and complete unchanged lock graph during formatting; native/source qualification, compiler and public-runtime closure, cache inputs, credential and publishing authority remain unchanged. Foundry #294: Reviewed CI-owned comparison against verified merge ancestry, shared canonical release inspection and source/consumer runtime ownership."
+lastReviewedAt: 2026-11-20
+lastReviewedCommit: 53d1c063d793b617ea678b06b043e53f0a3358a4
+lastReviewedNote: "Retained planner review dated 2026-11-19 at 204a90af7841659e281f95b3732f2de6720715bf. Foundry #287: reviewed the four eligible development-tool updates and complete unchanged lock graph during formatting; native/source qualification, compiler and public-runtime closure, cache inputs, credential and publishing authority remain unchanged. Foundry #294: Reviewed CI-owned comparison against verified merge ancestry, shared canonical release inspection and source/consumer runtime ownership. Retained host review dated 2026-11-20 at 53d1c063d793b617ea678b06b043e53f0a3358a4. Foundry #287: reviewed the four eligible development-tool updates and complete unchanged lock graph during formatting; native/source qualification, compiler and public-runtime closure, cache inputs, credential and publishing authority remain unchanged. Foundry #296: reviewed ordinary GitHub Windows shard host observations, source/plan/partition/run binding, null omissions and failed/cancelled/signalled evidence after the original elapsed snapshot. Test qualification, public runtime, task/skill ownership, credentials and publisher authority remain unchanged. Foundry #295 source composition of planner 803f98c39d21bbd15425427cbad61d378d3333f2 and eligible Main ce803beb5fc3408935ccf722a16255c91bd68d69 preserves both reviewed source histories."
 ---
 
 # Architecture

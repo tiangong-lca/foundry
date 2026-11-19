@@ -35,8 +35,8 @@ checkPaths:
   - test/scenarios/foundry-package-consumer.test.mts
   - test/unit/foundry-runtime-environment.test.mts
 lastReviewedAt: 2026-11-19
-lastReviewedCommit: 119f1e2b6248532baf3d0f9989fe84fcebc864e3
-lastReviewedNote: "Foundry #287: reviewed the four eligible development-tool updates and complete unchanged lock graph during formatting; native/source qualification, compiler and public-runtime closure, cache inputs, credential and publishing authority remain unchanged."
+lastReviewedCommit: 204a90af7841659e281f95b3732f2de6720715bf
+lastReviewedNote: "Foundry #287: reviewed the four eligible development-tool updates and complete unchanged lock graph during formatting; native/source qualification, compiler and public-runtime closure, cache inputs, credential and publishing authority remain unchanged. Foundry #294: Reviewed the workflow-projected PR head, number and base-repository identity, bounded Git inspection and exclusion from installed runtime configuration."
 ---
 
 # Environment Surface Policy
@@ -67,7 +67,7 @@ The `release:prepare-production` command binds its own clean physical Git root a
 
 `release:prepare-native` similarly takes only a fresh output and the current supported tuple. Its URLs/digests come from reviewed source data. Redirects remain on the fixed official HTTPS artifact hosts and carry no account authorization. Native inspection uses only platform settings and a fresh private child home, without inherited Node options, TIDAS overrides or user sessions. The downloaded Node/TIDAS artifacts and upstream license texts are inputs, not sources of runtime authority or business permissions.
 
-CI tooling additionally uses `FOUNDRY_CI_BASE_SHA` and `FOUNDRY_CI_SOURCE_SHA` for exact PR/caller-source selection. `FOUNDRY_CI_PACKAGE_DIR`, `FOUNDRY_CI_PACKAGE_MANIFEST_SHA256` and `FOUNDRY_CI_PACKAGE_SHA256` are a complete source-job-only artifact selection supplied from independent producing-job outputs. Partial or invalid selection fails; it never silently rebuilds or reads an operator credential. The package context includes only non-secret Git/toolchain/run facts. These variables are excluded from `.env.example`, ordinary task inputs and installed runtime configuration.
+CI tooling uses `FOUNDRY_CI_BASE_SHA` and `FOUNDRY_CI_SOURCE_SHA` for exact PR/caller-source selection. For ordinary hosted PR runs, the workflow also projects `FOUNDRY_CI_PR_HEAD_SHA`, `FOUNDRY_CI_PR_NUMBER` and `FOUNDRY_CI_PR_BASE_REPO_ID` from its event. The planner and both version-gate inspections bind these values to the current checkout, event ref and repository identity before selecting the tested merge's first parent. Direct PR-head checkouts retain the event base, and the declared base must be an ancestor of any selected tested base. `FOUNDRY_CI_PACKAGE_DIR`, `FOUNDRY_CI_PACKAGE_MANIFEST_SHA256` and `FOUNDRY_CI_PACKAGE_SHA256` are a complete source-job-only artifact selection supplied from independent producing-job outputs. Partial or invalid selection fails; it never silently rebuilds or reads an operator credential. The package context includes only non-secret Git/toolchain/run facts. These variables are excluded from `.env.example`, ordinary task inputs and installed runtime configuration.
 
 `FOUNDRY_MANAGED_TEST_DIAGNOSTICS_ROOT` is a source-test-only output selector supplied by the validated CI shard runner. Its fresh diagnostics directory binds the selected source, platform, plan and shard; partial observations cannot qualify a test or runtime. The managed fixture exports only bounded, allowlisted completion and failure facts, preserving null unknown counts and observed negative exits. It omits raw output, free-form messages, paths, arguments, environment, account/auth objects, credentials, queries and task payloads. The selector is not forwarded to managed product children and is excluded from `.env.example`, task inputs, component manifests and installed runtime authority.
 

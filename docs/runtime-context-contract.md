@@ -46,8 +46,8 @@ related:
   - docs/public-runtime-contract.md
   - docs/package-distribution-contract.md
 lastReviewedAt: 2026-11-19
-lastReviewedCommit: 119f1e2b6248532baf3d0f9989fe84fcebc864e3
-lastReviewedNote: "Foundry #287: reviewed the four eligible development-tool updates and complete unchanged lock graph during formatting; native/source qualification, compiler and public-runtime closure, cache inputs, credential and publishing authority remain unchanged."
+lastReviewedCommit: 204a90af7841659e281f95b3732f2de6720715bf
+lastReviewedNote: "Foundry #287: reviewed the four eligible development-tool updates and complete unchanged lock graph during formatting; native/source qualification, compiler and public-runtime closure, cache inputs, credential and publishing authority remain unchanged. Foundry #294: Reviewed immutable runtime context, package layout and source-free child admission against the separate source-CI comparison."
 ---
 
 # Runtime context

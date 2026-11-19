@@ -153,8 +153,8 @@ checkPaths:
   - test/unit/lint-suppression-audit.test.mts
   - docs/incremental-change-set-contract.md
 lastReviewedAt: 2026-11-19
-lastReviewedCommit: 119f1e2b6248532baf3d0f9989fe84fcebc864e3
-lastReviewedNote: "Foundry #287: reviewed the four eligible development-tool updates and complete unchanged lock graph during formatting; native/source qualification, compiler and public-runtime closure, cache inputs, credential and publishing authority remain unchanged."
+lastReviewedCommit: a19b11efa65d86003c6d58e20c08f1691f94e9f5
+lastReviewedNote: "Retained Main review at 119f1e2b6248532baf3d0f9989fe84fcebc864e3: Foundry #287: reviewed the four eligible development-tool updates and complete unchanged lock graph during formatting; native/source qualification, compiler and public-runtime closure, cache inputs, credential and publishing authority remain unchanged. Retained original PR274 review at 61806029d2fd53d268e709da630513778a38eabe: Foundry #290: scoped review of the nineteen original pnpm/setup v3.1.2 references and preserved exact toolchain, complete source/native/bootstrap tests, immutable-author non-sealing, cache inputs and publication/operational authority. Historical Windows timeout and withdrawn advisory remain distinct; document behavior is unchanged. Foundry #290: local composition of exact Main a19b11efa65d with original head 44aecb2835e6 preserves nineteen original Action pins and all existing governance, runtime, cache and publication boundaries. This metadata conflict resolution does not fix the retained timeout or qualify source; no push or full CI is claimed."
 ---
 
 # Architecture

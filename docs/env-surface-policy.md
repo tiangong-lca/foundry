@@ -35,7 +35,7 @@ checkPaths:
   - test/scenarios/foundry-package-consumer.test.mts
   - test/unit/foundry-runtime-environment.test.mts
 lastReviewedAt: 2026-11-19
-lastReviewedCommit: 4feb5a33c6976ead150529d9126256cfb8eccf80
+lastReviewedCommit: c7e71f86899d42e19f316271f28a29281b4108fe
 lastReviewedNote: "Foundry #291: reviewed bounded test-only stage, original-case and error observations for the retained CLI 0.1.28 suite. Historical source/assertions/frozen inputs, the 900-second child and 40-minute job limits, and source/native/bootstrap/publishing authority remain unchanged. New diagnostics contain no credential or service/account context."
 ---
 

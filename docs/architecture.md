@@ -153,7 +153,7 @@ checkPaths:
   - test/unit/lint-suppression-audit.test.mts
   - docs/incremental-change-set-contract.md
 lastReviewedAt: 2026-11-19
-lastReviewedCommit: 4feb5a33c6976ead150529d9126256cfb8eccf80
+lastReviewedCommit: c7e71f86899d42e19f316271f28a29281b4108fe
 lastReviewedNote: "Foundry #291: reviewed bounded test-only stage, original-case and error observations for the retained CLI 0.1.28 suite. Historical source/assertions/frozen inputs, the 900-second child and 40-minute job limits, and source/native/bootstrap/publishing authority remain unchanged. New diagnostics contain no credential or service/account context."
 ---
 

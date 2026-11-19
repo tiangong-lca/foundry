@@ -159,7 +159,7 @@ checkPaths:
   - test/unit/zero-javascript-ratchet.test.mts
   - test/scenarios/foundry-package-consumer.test.mts
 lastReviewedAt: 2026-11-19
-lastReviewedCommit: 4feb5a33c6976ead150529d9126256cfb8eccf80
+lastReviewedCommit: c7e71f86899d42e19f316271f28a29281b4108fe
 lastReviewedNote: "Foundry #291: scoped review of retained test-only phase observations; immutable original source, full tests, child/job deadlines, runtime inputs, private-data and publishing boundaries remain unchanged."
 ---
 

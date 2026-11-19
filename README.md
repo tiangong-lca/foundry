@@ -159,8 +159,8 @@ checkPaths:
   - test/unit/zero-javascript-ratchet.test.mts
   - test/scenarios/foundry-package-consumer.test.mts
 lastReviewedAt: 2026-11-19
-lastReviewedCommit: 0306fdd8bf452a6139021884178da27f6a6fcb40
-lastReviewedNote: "Foundry #287: reviewed the four eligible development-tool updates and complete unchanged lock graph during formatting; native/source qualification, compiler and public-runtime closure, cache inputs, credential and publishing authority remain unchanged."
+lastReviewedCommit: c7e71f86899d42e19f316271f28a29281b4108fe
+lastReviewedNote: "Foundry #291: scoped review of retained test-only phase observations; immutable original source, full tests, child/job deadlines, runtime inputs, private-data and publishing boundaries remain unchanged."
 ---
 
 # TianGong LCA Data Foundry

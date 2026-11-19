@@ -280,8 +280,8 @@ checkPaths:
   - docs/foundry-ai-navigation.md
   - docs/foundry-command-surface.md
 lastReviewedAt: 2026-11-19
-lastReviewedCommit: 0306fdd8bf452a6139021884178da27f6a6fcb40
-lastReviewedNote: "Foundry #287: reviewed the four eligible development-tool updates and complete unchanged lock graph during formatting; native/source qualification, compiler and public-runtime closure, cache inputs, credential and publishing authority remain unchanged."
+lastReviewedCommit: c7e71f86899d42e19f316271f28a29281b4108fe
+lastReviewedNote: "Foundry #291: reviewed bounded test-only stage, original-case and error observations for the retained CLI 0.1.28 suite. Historical source/assertions/frozen inputs, the 900-second child and 40-minute job limits, and source/native/bootstrap/publishing authority remain unchanged. New diagnostics contain no credential or service/account context."
 ---
 
 # Test Layout
@@ -541,6 +541,10 @@ The Windows direct-context RED identified `ENOENT` from `mkdtemp` at a path cont
 The public workflow scenario also injects an authentic TIDAS `io` exit during Process row assessment. It proves the whole native report and bounded stderr are indexed with the selected row file/count, that a fresh process sees a concise I/O blocker and full evidence path, that unchanged resume does not replay native validation, and that altered evidence cannot become completion. This characterizes the Foundry evidence adapter; real Windows deep-path issue-spool persistence is tracked separately in Toolkit #223 and must be tested with the native executable.
 
 ## CI test execution and release lanes
+
+The retained CLI 0.1.28 native-suite wrapper still executes the original published Foundry source, frozen graph and assertions. Its checkout, frozen installation, CLI-version check, original suite and cleanup can emit fixed stage labels, monotonic elapsed times and bounded error classes. A test-only Node preload observes the three existing native-draft case boundaries without editing their source, changing their order or concurrency, or changing the 900-second child deadline and 40-minute hosted job limit.
+
+New failure feedback never forwards raw child streams, exception messages, argv, credentials or service/account context. It accepts at most six ordered case-boundary records from a combined 64 KiB input; unknown, malformed or oversized feedback remains an explicit observation gap. An end boundary is not a passing case. Original Node counters, exit status, assertions, cleanup and same-source CI guards remain the qualification authority. The command observer receives a frozen result view and cannot change the underlying result; its failure cannot replace an original spawn, nonzero exit or signal failure. These observations locate a real failure and do not establish production latency or a CI speedup.
 
 The public workflow scenarios retain their assertions and names. Heavy identity/approval and dependent-scope cases have separate scenario entry files over `fixtures/foundry-public-workflow.ts`, so process-global mocks and environment remain isolated. The CI planner includes every test file exactly once in each platform partition and balances known slow files with measured durations; estimates never replace execution evidence. The runner and collector reject missing/duplicate files, wrong source/plan/platform, failed execution and changed event bytes.
 

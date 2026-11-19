@@ -132,14 +132,33 @@ test("command observation cannot rewrite failure or replace the original timeout
     );
     assert.ok(observed);
     assert.equal(failed.status, 7);
+    const partial = {
+      stage: "original-suite",
+      case: "native-draft-normal",
+      boundary: "start",
+      elapsed_ms: 1,
+    };
+    let timeoutFeedback: ReturnType<typeof readRetainedCasePhases> | undefined;
     assert.throws(
       () =>
-        command(process.execPath, ["-e", "setInterval(()=>{},1000)"], root, env, 300, () => {
-          throw new Error("observer must not replace timeout");
-        }),
+        command(
+          process.execPath,
+          [
+            "-e",
+            `process.stderr.write(${JSON.stringify(RETAINED_CASE_MARKER + JSON.stringify(partial) + "\n")});setInterval(()=>{},1000)`,
+          ],
+          root,
+          env,
+          2_000,
+          (result) => {
+            timeoutFeedback = readRetainedCasePhases(result.stderr, result.stdout);
+            throw new Error("observer must not replace timeout");
+          },
+        ),
       (error: unknown) =>
         !!error && typeof error === "object" && "code" in error && error.code === "ETIMEDOUT",
     );
+    assert.deepEqual(timeoutFeedback, { phases: [partial], omission: "none" });
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }

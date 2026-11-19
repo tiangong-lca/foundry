@@ -132,6 +132,31 @@ test("command observation cannot rewrite failure or replace the original timeout
     );
     assert.ok(observed);
     assert.equal(failed.status, 7);
+    const failedObservation = command(
+      process.execPath,
+      ["-e", "process.exitCode=7"],
+      root,
+      env,
+      120_000,
+      () => {
+        throw new Error("capture must not replace exit 7");
+      },
+    );
+    assert.equal(failedObservation.status, 7);
+    if (process.platform !== "win32") {
+      const signalled = command(
+        process.execPath,
+        ["-e", "process.kill(process.pid,'SIGTERM')"],
+        root,
+        env,
+        120_000,
+        () => {
+          throw new Error("capture must not replace signal failure");
+        },
+      );
+      assert.equal(signalled.status, null);
+      assert.equal(signalled.signal, "SIGTERM");
+    }
     const partial = {
       stage: "original-suite",
       case: "native-draft-normal",
@@ -203,6 +228,41 @@ test('private service context',()=>{});
     );
     assert.doesNotMatch(JSON.stringify(feedback), /private service context/u);
   } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("the native test/preload chain retains a case start before the original spawn timeout", async () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "foundry-retained-partial-"));
+  try {
+    const file = path.join(root, "finite.test.mts");
+    fs.writeFileSync(
+      file,
+      "import test from 'node:test';test('public native draft repair accepts a bound save_draft contract without extra dispatch',()=>new Promise(resolve=>setTimeout(resolve,5000)));\n",
+    );
+    const observer = path.resolve(import.meta.dirname, "../helpers/retained-test-observer.mts");
+    let feedback: ReturnType<typeof readRetainedCasePhases> | undefined;
+    assert.throws(
+      () =>
+        command(
+          process.execPath,
+          ["--test", "--test-reporter=spec", "--import", pathToFileURL(observer).href, file],
+          root,
+          isolatedEnvironment(path.join(root, "home")),
+          2_000,
+          (result) => {
+            feedback = readRetainedCasePhases(result.stderr, result.stdout);
+          },
+        ),
+      (error: unknown) =>
+        !!error && typeof error === "object" && "code" in error && error.code === "ETIMEDOUT",
+    );
+    assert.equal(feedback?.omission, "none");
+    assert.equal(feedback?.phases[0]?.case, "native-draft-normal");
+    assert.equal(feedback?.phases[0]?.boundary, "start");
+  } finally {
+    // This fixture has a finite timer even if its worker outlives the runner.
+    await new Promise((resolve) => setTimeout(resolve, 4_000));
     fs.rmSync(root, { recursive: true, force: true });
   }
 });

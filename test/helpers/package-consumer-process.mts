@@ -101,6 +101,7 @@ export function command(
     observationError = error;
   }
   if (result.error) throw result.error;
+  if (result.status !== 0 || result.signal) return result;
   if (observationFailed) throw observationError;
   return result;
 }

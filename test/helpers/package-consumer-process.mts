@@ -3,6 +3,14 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { resolvePackageManagerCommand } from "../../scripts/lib/package-manager-command.ts";
 
+export interface CommandObservation {
+  readonly status: number | null;
+  readonly signal: NodeJS.Signals | null;
+  readonly errorCode: string | null;
+  readonly stdout: string;
+  readonly stderr: string;
+}
+
 const secretKey = /(?:PASSWORD|PASSWD|TOKEN|SECRET|COOKIE|CREDENTIAL|API_?KEY|PRIVATE_?KEY)/iu;
 
 export function isolatedEnvironment(
@@ -63,6 +71,7 @@ export function command(
   cwd: string,
   environment: NodeJS.ProcessEnv,
   timeout = 120_000,
+  observe?: (result: CommandObservation) => void,
 ) {
   const result = spawnSync(executable, args, {
     shell: false,
@@ -72,7 +81,27 @@ export function command(
     maxBuffer: 32 * 1024 * 1024,
     timeout,
   });
+  let observationFailed = false;
+  let observationError: unknown;
+  try {
+    observe?.(
+      Object.freeze({
+        status: result.status,
+        signal: result.signal,
+        errorCode:
+          result.error && "code" in result.error && typeof result.error.code === "string"
+            ? result.error.code
+            : null,
+        stdout: result.stdout ?? "",
+        stderr: result.stderr ?? "",
+      }),
+    );
+  } catch (error) {
+    observationFailed = true;
+    observationError = error;
+  }
   if (result.error) throw result.error;
+  if (observationFailed) throw observationError;
   return result;
 }
 

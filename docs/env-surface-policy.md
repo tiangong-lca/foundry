@@ -161,6 +161,8 @@ Public finalization, handoff and readback set `FOUNDRY_ACCOUNT_MODE` only from t
 
 ## Source CI recovery inputs
 
+Retained-suite test feedback adds no environment input or authentication path. Its existing diagnostic channel carries only fixed preparation-stage and case labels, elapsed times and bounded error classes. The test-only Node preload is outside the public compiler/package closure. Raw child streams and exception messages do not enter new failure records; missing observations never grant a passing outcome, replay or runtime authority.
+
 `FOUNDRY_QUALIFICATION_CAPSULE`, `FOUNDRY_RESUME_RUN`, `FOUNDRY_CI_CAN_SEAL`, `FOUNDRY_STAGE_PASSED` and `FOUNDRY_SOURCE_PACKAGE_*` are source-workflow inputs only. They never enter the public environment example, task configuration or installed runtime. A path or success flag grants no trust: the owning job, exact current source/toolchain, signed capsule and complete payload inventory are independently checked. GitHub tokens remain process-only. Preflight returns fixed OIDC validation facts and discards credentials; native diagnostics strip OIDC and package-publishing credentials before executing the selected immutable source.
 
 The owning public-bootstrap workflow uses `BOOTSTRAP_WORK` and `BOOTSTRAP_PROOF` only to select runner-temporary work and proof directories for a filesystem staging step. The qualification command's `BOOTSTRAP_OUTPUT` selects the work directory; the stage receives only its completed report. These values are not forwarded to the installed bootstrap/application, select no runtime trust anchor and grant no authentication or business authority.

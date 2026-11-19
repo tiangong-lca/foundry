@@ -302,9 +302,9 @@ policy:
   require_dry_run_before_remote_write: true
   required_multilang_english_before_write: true
   preserve_source_language_variants: true
-lastReviewedAt: 2026-11-15
-lastReviewedCommit: c30a1f516553282f7c82c82c5733689557078b5c
-lastReviewedNote: "Foundry #278: reviewed the 0.1.18 package, verifier and descriptor version projections over main containing the installed-entry change; runtime inputs, workflow, ownership and task contracts are unchanged."
+lastReviewedAt: 2026-11-19
+lastReviewedCommit: 0306fdd8bf452a6139021884178da27f6a6fcb40
+lastReviewedNote: "Foundry #287: reviewed the four eligible development-tool updates and complete unchanged lock graph during formatting; native/source qualification, compiler and public-runtime closure, cache inputs, credential and publishing authority remain unchanged."
 ---
 
 You are working on a TianGong LCA data import task.
@@ -544,6 +544,10 @@ Cleanup validates every targeted `common:timeStamp` / `common:dateOfLastRevision
 Production case TDD is deliberately separate from the numbered import lane and ordinary `pnpm test`. `pnpm case:production:contact-draft` may use every capability granted to the designated test account only within that account's isolated, unreviewed, unpublished data. It may read public production data for search/readback quality, but it must not mutate public, foreign, or shared rows and must not invoke review or publish transitions. The case requires POSIX private storage, an owner-private env file, a repository-local git-ignored per-run output with no symlink parent, a fresh intent-bound identity receipt before production reads, and another before its single new contact owner-draft mutation. Windows fails closed until user-exclusive ACL verification exists. A missing/malformed/stale receipt, nonzero child exit, secret-bearing artifact, runtime/artifact hash drift, foreign accepted difference, ambiguous mutation, or non-unique readback stops the case without an automatic write retry.
 
 Rows remain source-language before import. Bilingual completion is a separate post-import task only when requested.
+
+## Revising a current owner draft
+
+For scientific edits to an existing Process, select its exact before document, a reviewed candidate and the source evidence for each change. Run the qualified Worker comparison, then start the installed repair lane with its scientific selection. The task returns the next preparation, approval or recovery action. For an uncertain write, retain its request and use the returned readback action. [Scientific Process repair](docs/public-runtime-contract.md#scientific-process-repair)
 
 ## Incremental Release Lane
 

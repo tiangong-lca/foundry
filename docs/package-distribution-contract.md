@@ -39,9 +39,9 @@ related:
   - docs/runtime-context-contract.md
   - docs/task-authorization-contract.md
   - docs/safety-policy.md
-lastReviewedAt: 2026-11-15
-lastReviewedCommit: c30a1f516553282f7c82c82c5733689557078b5c
-lastReviewedNote: "Foundry #278: reviewed the 0.1.18 package, verifier and descriptor version projections over main containing the installed-entry change; runtime inputs, workflow, ownership and task contracts are unchanged."
+lastReviewedAt: 2026-11-19
+lastReviewedCommit: 0306fdd8bf452a6139021884178da27f6a6fcb40
+lastReviewedNote: "Foundry #287: reviewed the four eligible development-tool updates and complete unchanged lock graph during formatting; native/source qualification, compiler and public-runtime closure, cache inputs, credential and publishing authority remain unchanged."
 ---
 
 # Foundry package distribution
@@ -369,3 +369,5 @@ The existing public bin now also hosts installation-owned default selection and 
 Skill instructions depend on the installed entry and public protocols. Deployment can change the selected complete release without changing skill files. The exact package dependency graph, runtime assets and task/attempt records remain version-bound. Historical standalone bootstrap locks remain reproducible release assets and have no precedence over an explicit deployment selection.
 
 CLI candidate updates enter through the existing Dependabot proposals and complete source/native/package CI. Release owners update the reviewed CLI source/provenance facts and run the existing release preparation and publication chain. An accepted dependency change produces a new immutable combination. Deployment verifies it, checks required protocols with `runtime describe`, installs the selected components, and updates its manifest/digest pair together. Restoring the preceding pair restores the prior default for new calls; existing tasks retain original returned actions. A new public protocol requires caller compatibility work; an unchanged protocol permits reuse of the same skill.
+
+The scientific Process repair protocol packages its own selection schema. For that workflow the installation owner also supplies a qualified Worker `snapshot_builder` and the independently verified SHA-256 of the installed executable. Build from the reviewed Worker source with `cargo build --locked --release -p solver-worker --bin snapshot_builder` in a supported Worker build environment, or use a deployment artifact qualified for the same diagnostic. Keep its native libraries available in its deployed layout. Check the selected installation with the public provider-impact fixture before binding its digest in the host configuration. The [scientific repair contract](public-runtime-contract.md#scientific-process-repair) specifies the protocol marker, input evidence and task recovery.

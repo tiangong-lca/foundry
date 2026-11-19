@@ -158,9 +158,9 @@ checkPaths:
   - test/unit/lint-suppression-audit.test.mts
   - test/unit/zero-javascript-ratchet.test.mts
   - test/scenarios/foundry-package-consumer.test.mts
-lastReviewedAt: 2026-11-15
-lastReviewedCommit: c30a1f516553282f7c82c82c5733689557078b5c
-lastReviewedNote: "Foundry #278: reviewed the 0.1.18 package, verifier and descriptor version projections over main containing the installed-entry change; runtime inputs, workflow, ownership and task contracts are unchanged."
+lastReviewedAt: 2026-11-19
+lastReviewedCommit: 0306fdd8bf452a6139021884178da27f6a6fcb40
+lastReviewedNote: "Foundry #287: reviewed the four eligible development-tool updates and complete unchanged lock graph during formatting; native/source qualification, compiler and public-runtime closure, cache inputs, credential and publishing authority remain unchanged."
 ---
 
 # TianGong LCA Data Foundry
@@ -168,6 +168,8 @@ lastReviewedNote: "Foundry #278: reviewed the 0.1.18 package, verifier and descr
 The ordinary user entry is the independently installed [TianGong Foundry skill](https://github.com/tiangong-lca/agent-skills/tree/main/foundry-tidas-import). It uses the environment-selected managed runtime for a separate user workspace; deployment owns the verified release selection. The internal authoring role is maintained in the same Skills repository and loads for current semantic work items. This source checkout retains the developer commands and runtime owners described below; it carries no second maintained copy of either skill.
 
 The public task protocol can retain a short goal and scope, register evidence-bound questions and raw answers, and distinguish task-wide, dataset-type-wide and exact registered-object choices. An object choice carries a versioned identity and current row hash; independent Process work can continue while another Process awaits an answer. Semantic results record only applicable decision IDs and their indexed before/after row hashes, while a concise recap points back to full evidence. The entry skill explains human decisions in plain language and accepts natural answers; Foundry presents the question, impact and next step before the exact record locator while preserving full evidence in indexed artifacts. The CLI keeps scientific validation and write permission separate. A source checkout implementing this protocol does not itself update the independently qualified installed runtime selection.
+
+Use `task prepare-input` to bind an interaction or semantic submission to current task evidence. An existing owner draft can enter the scientific repair workflow with a reviewed before/candidate pair, field-level sources and a Worker provider-impact report. The [public task contract](docs/public-runtime-contract.md) describes the required files and recovery behavior.
 
 The package candidate now supports CLI-managed execution with verified runtime components and separate read/write workspace access. F1 publication and complete production qualification remain in progress; see `docs/package-distribution-contract.md` for the current release boundary.
 

@@ -152,9 +152,9 @@ checkPaths:
   - test/unit/foundry-runtime-environment.test.mts
   - test/unit/lint-suppression-audit.test.mts
   - docs/incremental-change-set-contract.md
-lastReviewedAt: 2026-11-15
-lastReviewedCommit: c30a1f516553282f7c82c82c5733689557078b5c
-lastReviewedNote: "Foundry #278: reviewed the 0.1.18 package, verifier and descriptor version projections over main containing the installed-entry change; runtime inputs, workflow, ownership and task contracts are unchanged."
+lastReviewedAt: 2026-11-19
+lastReviewedCommit: 0306fdd8bf452a6139021884178da27f6a6fcb40
+lastReviewedNote: "Foundry #287: reviewed the four eligible development-tool updates and complete unchanged lock graph during formatting; native/source qualification, compiler and public-runtime closure, cache inputs, credential and publishing authority remain unchanged."
 ---
 
 # Architecture
@@ -188,6 +188,8 @@ Foundry selects a private session reference and exact project/user intent, then 
 `foundry-runtime-command-policy.ts` explicitly classifies all 63 existing commands. Package assets, workspace selections, task-lineage inputs, state/artifact outputs, native/CLI child ownership and restricted authorization are separate fields. Adding a command without a disposition fails module initialization. Repository maintenance is excluded from the consumer surface; local preparation does not acquire task permission merely because it is a task stage.
 
 `foundry-runtime-qualification.ts` binds current Foundry package identity to exact public CLI and independently selected native TIDAS bytes/protocols. `foundry-execution-admission.ts` then binds the current source lineage, derived final rows, active grant/actions/QA evidence and owner CLI CommandSpec. Rehydration in a new process reconstructs every process-local proof and checks the exact owner-draft argv shape before returning the spec. Mutation dispatch, attempt transitions and readback remain with the existing CLI/orchestration owners.
+
+The local descriptor preparer in `foundry-task-input-preparation.ts` derives digests from indexed task state. The scientific repair path in `foundry-scientific-repair.ts` binds the field sources, reviewer and native comparison. `foundry-repair-census.ts` independently observes visible identities and dependencies for preparation and original-attempt verification. [Public repair workflow](public-runtime-contract.md#scientific-process-repair)
 
 ## Public facade composition
 

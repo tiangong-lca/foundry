@@ -93,9 +93,9 @@ checkPaths:
   - scripts/lib/import-curation/internal/mutation-manifest-workflow.ts
   - scripts/lib/import-curation/mutation-manifest.ts
   - test/commands/*.test.mts
-lastReviewedAt: 2026-11-15
-lastReviewedCommit: c30a1f516553282f7c82c82c5733689557078b5c
-lastReviewedNote: "Foundry #278: reviewed the 0.1.18 package, verifier and descriptor version projections over main containing the installed-entry change; runtime inputs, workflow, ownership and task contracts are unchanged."
+lastReviewedAt: 2026-11-19
+lastReviewedCommit: 0306fdd8bf452a6139021884178da27f6a6fcb40
+lastReviewedNote: "Foundry #287: reviewed the four eligible development-tool updates and complete unchanged lock graph during formatting; native/source qualification, compiler and public-runtime closure, cache inputs, credential and publishing authority remain unchanged."
 ---
 
 # Capability Ownership Policy
@@ -136,7 +136,7 @@ Foundry owns:
 
 - its exact pnpm package-manager contract, sole root workspace/lock, and repository-local validation gates;
 - its source-free public bin/API compiler graph, sanitized npm staging manifest, explicit file allowlist and package descriptor verification;
-- the six hierarchical workspace/task facade operations, strict result/task-spec schemas, request/revision indexes and actor-bound task projection;
+- the hierarchical workspace/task facade operations, strict result/task-spec schemas, request/revision indexes and actor-bound task projection;
 - task-local brief and interaction artifacts, evidence-bound answer history, per-type assessment coverage and exact per-object decision projection/adoption; the Skills entry owns question wording and final prose;
 - deterministic local task preparation and read-only legacy inventory through existing runtime/task owners;
 
@@ -267,3 +267,5 @@ The managed adoption carrier and typed authentication projection belong to Found
 Foundry owns the content-bound preparation quality disposition over a CLI-produced Process mass observation. It retains raw numerical QA, accepts only a specifically reviewed object/finding and checks current evidence on reassessment/finalization. CLI QA, canonical payload/reference closure and account/write owners keep their responsibilities. Review evidence is never a global profile waiver or write grant; the public contract is [preparation quality review](public-runtime-contract.md#preparation-quality-review).
 
 Installed-entry selection and read-only Foundry protocol discovery are Foundry-owned adapters over `@tiangong-lca/cli/runtime`. Manifest admission, component verification and execution remain CLI-owned. Deployment owns the default release; Skills own capability requirements and workflow instructions. Existing task bindings never inherit a changed default.
+
+Scientific owner-draft repair binds current online evidence, an independently reviewed field change set and a Worker provider-impact comparison. Worker owns provider selection, lineage, matrix assembly and the finite diagnostic. Foundry qualifies the deployment-selected executable, observes the current project through the authenticated public read interface and binds the evidence to the existing repair approval and attempt. Process save and full-before comparison remain in the platform transaction.

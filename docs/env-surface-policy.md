@@ -34,9 +34,9 @@ checkPaths:
   - scripts/public-api.ts
   - test/scenarios/foundry-package-consumer.test.mts
   - test/unit/foundry-runtime-environment.test.mts
-lastReviewedAt: 2026-11-15
-lastReviewedCommit: c30a1f516553282f7c82c82c5733689557078b5c
-lastReviewedNote: "Foundry #278: reviewed the 0.1.18 package, verifier and descriptor version projections over main containing the installed-entry change; runtime inputs, workflow, ownership and task contracts are unchanged."
+lastReviewedAt: 2026-11-19
+lastReviewedCommit: 0306fdd8bf452a6139021884178da27f6a6fcb40
+lastReviewedNote: "Foundry #287: reviewed the four eligible development-tool updates and complete unchanged lock graph during formatting; native/source qualification, compiler and public-runtime closure, cache inputs, credential and publishing authority remain unchanged."
 ---
 
 # Environment Surface Policy
@@ -72,6 +72,10 @@ CI tooling additionally uses `FOUNDRY_CI_BASE_SHA` and `FOUNDRY_CI_SOURCE_SHA` f
 `FOUNDRY_MANAGED_TEST_DIAGNOSTICS_ROOT` is a source-test-only output selector supplied by the validated CI shard runner. Its fresh diagnostics directory binds the selected source, platform, plan and shard; partial observations cannot qualify a test or runtime. The managed fixture exports only bounded, allowlisted completion and failure facts, preserving null unknown counts and observed negative exits. It omits raw output, free-form messages, paths, arguments, environment, account/auth objects, credentials, queries and task payloads. The selector is not forwarded to managed product children and is excluded from `.env.example`, task inputs, component manifests and installed runtime authority.
 
 ## Allowed Variables
+
+Scientific Process repair additionally reads a deployment-owned `tiangong-foundry/provider-impact-runtime.json` beneath the existing absolute `XDG_CONFIG_HOME`, falling back to `.config` under the host home directory. The existing CLI runtime manager preserves these system directory selectors through managed launch. The strict file contains `schema: tiangong-foundry.provider-impact-runtime.v1`, an absolute `executable` and its independently trusted raw-byte `sha256`. Configuration and executable real paths must remain outside task sources, workspace and cache roots. Deployment owners must protect the installation and its relative native dependencies from task writes. Task specifications and ordinary application arguments cannot supply this executable or trust digest.
+
+Foundry binds the configuration and executable facts during scientific task registration, checks them on reentry, executes the original deployed program with an isolated credential-free environment, and rechecks both bindings after diagnosis. The complete native report must name the same executing binary hash and equal the independently reviewed raw report bytes. Native dependencies retain their deployed relative layout. This host configuration grants local diagnostic execution only. Foundry runtime qualification, account intent, scientific evidence, explicit write approval and original-attempt recovery retain their own admission checks.
 
 Only document variables that meet at least one of these conditions:
 

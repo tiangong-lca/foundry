@@ -45,9 +45,9 @@ related:
   - docs/task-authorization-contract.md
   - docs/public-runtime-contract.md
   - docs/package-distribution-contract.md
-lastReviewedAt: 2026-11-15
-lastReviewedCommit: c30a1f516553282f7c82c82c5733689557078b5c
-lastReviewedNote: "Foundry #278: reviewed the 0.1.18 package, verifier and descriptor version projections over main containing the installed-entry change; runtime inputs, workflow, ownership and task contracts are unchanged."
+lastReviewedAt: 2026-11-19
+lastReviewedCommit: 0306fdd8bf452a6139021884178da27f6a6fcb40
+lastReviewedNote: "Foundry #287: reviewed the four eligible development-tool updates and complete unchanged lock graph during formatting; native/source qualification, compiler and public-runtime closure, cache inputs, credential and publishing authority remain unchanged."
 ---
 
 # Runtime context
@@ -59,6 +59,8 @@ The consumer runtime receives an explicit `FoundryRuntimeContext`. Construction 
 The runtime entry now exposes the six W05 hierarchical operations described in `public-runtime-contract.md`, while retaining the old source developer commands. The facade delegates cleanup and native import to their existing owners, and contract context to the exact published CLI. Their local outputs are registered through the same task transaction. All 63 internal commands keep their explicit disposition in `foundry-runtime-command-policy.ts`; the six public operations are a separate orchestration surface over those owners. Repository maintenance remains excluded, and task/native families remain internal with declared asset/input/output roots, child-process ownership, qualification and authorization requirements.
 
 The public task facade delegates sealed owner execution to `foundry-workflow-execution.ts`, request/attempt state to `foundry-owner-execution-store.ts`, and independent owner verification to `foundry-owner-readback.ts`. The existing closeout factory lives under `lib/finalize-owners` with its developer-command re-export preserved. Local operation receipts capture evidence only; the CLI batch boundary owns one-shot mutation and readback recovery. `foundry-workflow-reference-verify.ts` separately binds current semantic canonical targets to qualified CLI reference checks, using an explicit authentication environment and fresh output generation. See [public execution and recovery](public-runtime-contract.md#owner-execution-and-recovery).
+
+A scientific repair pins its deployment-selected Worker executable separately from the CLI and TIDAS runtime qualification. Its public result binds the frozen input, native report and the observed visible directory. The original task keeps those input and execution identities across preparation, approval and recovery. [Scientific repair](public-runtime-contract.md#scientific-process-repair)
 
 ## Runtime qualification and child admission
 

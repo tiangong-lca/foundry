@@ -10,6 +10,7 @@ import {
   planFoundryReleaseVersion,
 } from "../../scripts/lib/foundry-release-version.ts";
 import { inspectFoundryReleaseWorkflow } from "../../scripts/lib/foundry-release-workflow.ts";
+import { inspectFoundryCiPullRequest } from "../../scripts/lib/foundry-ci-pr-inspection.ts";
 import { inspectFoundryRelease } from "../../scripts/lib/foundry-release-contract.ts";
 
 const source = path.resolve(import.meta.dirname, "../..");
@@ -333,4 +334,135 @@ test("tag command refuses a qualification job before reading an event or using t
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }
+});
+
+function testedPrEnvironment(source: string, eventBase: string, prHead: string): NodeJS.ProcessEnv {
+  return {
+    GITHUB_ACTIONS: "true",
+    GITHUB_EVENT_NAME: "pull_request",
+    GITHUB_REPOSITORY_ID: "1260957221",
+    GITHUB_REF: "refs/pull/42/merge",
+    GITHUB_SHA: source,
+    FOUNDRY_CI_BASE_SHA: eventBase,
+    FOUNDRY_CI_PR_NUMBER: "42",
+    FOUNDRY_CI_PR_HEAD_SHA: prHead,
+    FOUNDRY_CI_PR_BASE_REPO_ID: "1260957221",
+  };
+}
+
+test("PR CI attributes an intervening Main release to the tested base", (t) => {
+  const f = fixture();
+  t.after(() => fs.rmSync(f.root, { recursive: true, force: true }));
+  f.git("switch", "-c", "topic");
+  fs.appendFileSync(path.join(f.root, "scripts/release-inspect.ts"), "// ordinary PR\n");
+  f.git("add", ".");
+  f.git("commit", "-m", "Ordinary change");
+  const prHead = f.git("rev-parse", "HEAD");
+  f.git("switch", "main");
+  applyFoundryReleaseVersion(planFoundryReleaseVersion(f.root, f.version));
+  f.git("add", ".");
+  f.git("commit", "-m", "Accepted release");
+  const base = f.git("rev-parse", "HEAD");
+  f.git("merge", "--no-ff", "-m", "Test PR", "topic");
+  const source = f.git("rev-parse", "HEAD");
+  assert.notEqual(f.git("rev-parse", source + "^{tree}"), f.git("rev-parse", prHead + "^{tree}"));
+  const env = testedPrEnvironment(source, f.initial, prHead);
+  assert.throws(() => inspectFoundryRelease(f.root, f.initial, source), /Unexpected release-only/);
+  const expected = inspectFoundryRelease(f.root, base, source);
+  assert.equal(expected.release, false);
+  assert.deepEqual(expected.changedPaths, ["scripts/release-inspect.ts"]);
+  assert.deepEqual(inspectFoundryCiPullRequest(f.root, source, env), expected);
+  assert.deepEqual(
+    inspectFoundryCiPullRequest(f.root, source, { ...env, FOUNDRY_CI_BASE_SHA: base }),
+    expected,
+  );
+
+  for (const invalid of [
+    { GITHUB_REF: "refs/pull/43/merge" },
+    { FOUNDRY_CI_PR_HEAD_SHA: base },
+    { FOUNDRY_CI_PR_HEAD_SHA: "not-a-sha" },
+    { FOUNDRY_CI_PR_NUMBER: "" },
+    { FOUNDRY_CI_PR_BASE_REPO_ID: "123" },
+    { GITHUB_SHA: prHead },
+    { FOUNDRY_CI_BASE_SHA: prHead },
+  ]) {
+    assert.throws(() => inspectFoundryCiPullRequest(f.root, source, { ...env, ...invalid }));
+  }
+
+  // A direct head can itself be a merge. Its parents cannot redefine the PR delta.
+  assert.throws(
+    () =>
+      inspectFoundryCiPullRequest(f.root, source, {
+        ...env,
+        GITHUB_REF: "refs/pull/42/head",
+        FOUNDRY_CI_PR_HEAD_SHA: source,
+      }),
+    /Unexpected release-only/,
+  );
+  f.git("checkout", "--detach", prHead);
+  assert.throws(
+    () =>
+      inspectFoundryCiPullRequest(f.root, prHead, testedPrEnvironment(prHead, f.initial, prHead)),
+    /second parent/,
+  );
+  assert.deepEqual(
+    inspectFoundryCiPullRequest(f.root, prHead, {
+      ...testedPrEnvironment(prHead, f.initial, prHead),
+      GITHUB_REF: "refs/heads/topic",
+      GITHUB_HEAD_REF: "topic",
+    }),
+    inspectFoundryRelease(f.root, f.initial, prHead),
+  );
+});
+
+test("a stale event base preserves both valid release-only PRs and mixed-release rejection", (t) => {
+  const f = fixture();
+  t.after(() => fs.rmSync(f.root, { recursive: true, force: true }));
+  fs.appendFileSync(path.join(f.root, "scripts/release-inspect.ts"), "// accepted on Main\n");
+  f.git("add", "scripts/release-inspect.ts");
+  f.git("commit", "-m", "Advanced base");
+  const base = f.git("rev-parse", "HEAD");
+  applyFoundryReleaseVersion(planFoundryReleaseVersion(f.root, f.version));
+  f.git("add", ".");
+  f.git("commit", "-m", "Version projection");
+  const release = f.git("rev-parse", "HEAD");
+  function checkoutTestMerge(head: string): string {
+    const merge = f.git(
+      "commit-tree",
+      head + "^{tree}",
+      "-p",
+      base,
+      "-p",
+      head,
+      "-m",
+      "Test merge",
+    );
+    f.git("checkout", "--detach", merge);
+    return merge;
+  }
+  const source = checkoutTestMerge(release);
+  assert.throws(
+    () => inspectFoundryRelease(f.root, f.initial, source),
+    /Unexpected release-only path: scripts\/release-inspect\.ts/u,
+  );
+  const result = inspectFoundryCiPullRequest(
+    f.root,
+    source,
+    testedPrEnvironment(source, f.initial, release),
+  );
+  assert.equal(result.release, true);
+  assert.equal(result.base, base);
+  assert.deepEqual(result, inspectFoundryRelease(f.root, base, source));
+
+  f.git("checkout", "--detach", release);
+  fs.appendFileSync(path.join(f.root, "scripts/release-inspect.ts"), "// unrelated to version\n");
+  f.git("add", ".");
+  f.git("commit", "-m", "Mixed version and unrelated file");
+  const mixed = f.git("rev-parse", "HEAD");
+  const tested = checkoutTestMerge(mixed);
+  assert.throws(
+    () =>
+      inspectFoundryCiPullRequest(f.root, tested, testedPrEnvironment(tested, f.initial, mixed)),
+    /Unexpected release-only path: scripts\/release-inspect\.ts/u,
+  );
 });
